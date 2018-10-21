@@ -9,7 +9,7 @@ import java.nio.ByteBuffer;
  */
 @SuppressWarnings("unused")
 public class Buffer implements BufferADT {
-
+    
     public Buffer() {
         
     }
@@ -36,7 +36,7 @@ public class Buffer implements BufferADT {
         // TODO Auto-generated method stub
 
     }
-    
+
     /**
      * Return the key
      */

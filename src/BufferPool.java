@@ -11,14 +11,12 @@ import java.io.RandomAccessFile;
 @SuppressWarnings("unused")
 public class BufferPool implements BufferPoolADT {
 
-    public BufferPool() {
-        try (RandomAccessFile file = new RandomAccessFile("file.txt", "rw")) {
-            file.close();
-          } catch (IOException e) {
-            // Exception handling
-          }
+    public BufferPool() throws IOException {
+        RandomAccessFile file = new RandomAccessFile("file.txt", "rw");
+        file.close();
     }
-    
+
+
     /**
      * @param block
      */
