@@ -28,8 +28,8 @@ import java.io.IOException;
 /**
  * The class containing the main method, the entry point of the application.
  * 
- * @author { your name here }
- * @version { put something here }
+ * @author { bob313 cdc97 }
+ * @version { Oct 21 2018 }
  */
 public class VirtualSort {
     
