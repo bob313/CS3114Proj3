@@ -44,7 +44,7 @@ public class VirtualSortTest
         VirtualSort.generateFile("input.txt", "10", 'a');
         VirtualSort.generateFile("input2.txt", "10", 'b');
         VirtualSort.main(args);
-        assertFalse(fileChecker.checkFile("input.txt"));
+        assertTrue(fileChecker.checkFile("input.txt"));
         assertFalse(fileChecker.checkFile("input2.txt"));
     }
 

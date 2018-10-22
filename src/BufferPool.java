@@ -15,10 +15,13 @@ import java.util.Queue;
 @SuppressWarnings("unused")
 public class BufferPool implements BufferPoolADT {
     Queue<Integer> q = new LinkedList<>();
-    byte[] record = new byte[4];
+    RandomAccessFile data;
+    byte[] blocks = new byte[4096];
     long length = 0;
+    long block = 0;
     long recs = 0;
     long count = 0;
+    byte[] record;
     byte[] key;
     byte[] value;
 
@@ -32,16 +35,17 @@ public class BufferPool implements BufferPoolADT {
      *             in case file doesn't exist
      */
     public BufferPool(String file) throws IOException {
-        RandomAccessFile data = new RandomAccessFile(file, "rw");
+        data = new RandomAccessFile(file, "rw");
         length = data.length();
-        // div by 4, becuz multiple of 4096 bytes, but blocks hold 1024 records
-        recs = length / 4;
-// while (cnt < recs) {
-// cnt++;
-// data.readFully(record);
-// key = Arrays.copyOfRange(record, 0, 2);
-// value = Arrays.copyOfRange(record, 2, 4);
-// }
+        block = length / 4096;
+        recs = block * 4;
+        // while (count < recs) {
+        count++;
+        data.readFully(blocks);
+        record = Arrays.copyOfRange(blocks, 0, 4);
+        key = Arrays.copyOfRange(record, 0, 2);
+        value = Arrays.copyOfRange(record, 2, 4);
+        // }
     }
 
 
@@ -54,11 +58,32 @@ public class BufferPool implements BufferPoolADT {
 
 
     /**
-     * Return the key
+     * 
+     * @param bytePos
+     * @return
      */
-    private short getkey(byte[] rec) {
-        ByteBuffer bb = ByteBuffer.wrap(rec);
-        return bb.getShort();
+    public byte[] getBytes(int bytePos) {
+        return Arrays.copyOfRange(blocks, bytePos, bytePos + 4);
     }
 
+
+    /**
+     * 
+     * @param pre
+     * @param post
+     */
+    public void swapBytes(int pre, int post) {
+        try {
+            data.write(Arrays.copyOfRange(blocks, pre, pre + 4), pre, 4);
+            data.write(Arrays.copyOfRange(blocks, post, post + 4), post, 4);
+        }
+        catch (Exception e) {
+            System.out.println("FAILED");
+        }
+// for (int i = 0; i < 4; i++) {
+// byte temp = blocks[post];
+// blocks[post + i] = blocks[pre + i];
+// blocks[pre + i] = temp;
+// }
+    }
 }
