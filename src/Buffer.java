@@ -9,6 +9,8 @@ import java.nio.ByteBuffer;
  */
 @SuppressWarnings("unused")
 public class Buffer implements BufferADT {
+    private short key;
+    private short value;
     
     public Buffer() {
         
@@ -37,12 +39,5 @@ public class Buffer implements BufferADT {
 
     }
 
-    /**
-     * Return the key
-     */
-     private short getkey(byte[] rec) {
-      ByteBuffer bb = ByteBuffer.wrap(rec);
-      return bb.getShort();
-     }
 
 }
