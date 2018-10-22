@@ -10,13 +10,15 @@ import java.nio.ByteBuffer;
 public class Sorting {
     BufferPool pool;
 
-/**
- * 
- * @param pool
- */
+
+    /**
+     * 
+     * @param pool
+     */
     public Sorting(BufferPool pool) {
         this.pool = pool;
     }
+
 
     /**
      * Return the key
@@ -25,21 +27,32 @@ public class Sorting {
         ByteBuffer bb = ByteBuffer.wrap(rec);
         return bb.getShort();
     }
-    
+
+
+    /**
+     * Return the value
+     */
+    private int getValue(byte[] rec) {
+        return (int)rec[0];
+    }
+
 
     /**
      * currently just insertion sort
      */
     public void sort() {
-        int n = pool.blocks.length / 4;
-        for (int i = 0; i < n; i = i+4) {
-            short key = this.getkey(pool.getBytes(i));
-            int j = i - 1;
-            while (j >= 0 && this.getkey(pool.getBytes(j)) > key) {
-                pool.swapBytes(j, j+1);
-                j = j - 1;
+        int n = pool.blocks.length;
+        for (int i = 0; i < n - 1; i++) {
+            if (this.getValue(pool.getBytes(i)) != 32) {
+                int min = i;
+                for (int j = i + 1; j < n; j++) {
+                    if (this.getValue(pool.getBytes(j)) != 32 && this.getValue(
+                        pool.getBytes(j)) < this.getValue(pool.getBytes(min))) {
+                        min = j;
+                    }
+                }
+                pool.swapBytes(min, i);
             }
-            pool.swapBytes(j, j+1);
         }
     }
 
@@ -87,7 +100,5 @@ public class Sorting {
             quicksort(arr, k + 1, end); // Sort right partition
         }
     }
-
-    
 
 }

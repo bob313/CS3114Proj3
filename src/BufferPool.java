@@ -42,6 +42,7 @@ public class BufferPool implements BufferPoolADT {
         // while (count < recs) {
         count++;
         data.readFully(blocks);
+        data.seek(0);
         record = Arrays.copyOfRange(blocks, 0, 4);
         key = Arrays.copyOfRange(record, 0, 2);
         value = Arrays.copyOfRange(record, 2, 4);
@@ -55,7 +56,15 @@ public class BufferPool implements BufferPoolADT {
     public Buffer acquireBuffer(int block) {
         return null;
     }
-
+    
+    /**
+     * 
+     * @param bytePos
+     * @return
+     */
+    public byte[] getRecord(int bytePos) {
+        return Arrays.copyOfRange(blocks, bytePos, bytePos + 1);
+    }
 
     /**
      * 
@@ -74,8 +83,10 @@ public class BufferPool implements BufferPoolADT {
      */
     public void swapBytes(int pre, int post) {
         try {
-            data.write(Arrays.copyOfRange(blocks, pre, pre + 4), pre, 4);
-            data.write(Arrays.copyOfRange(blocks, post, post + 4), post, 4);
+            data.write(Arrays.copyOfRange(blocks, pre, pre + 1), pre, 1);
+            data.seek(0);
+            data.write(Arrays.copyOfRange(blocks, post, post + 1), post, 1);
+            data.seek(0);
         }
         catch (Exception e) {
             System.out.println("FAILED");

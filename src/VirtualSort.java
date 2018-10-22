@@ -70,6 +70,7 @@ public class VirtualSort {
                 BufferPool pool = new BufferPool(args[0]);
                 Sorting sort = new Sorting(pool);
                 sort.sort();
+                pool.data.close();
             }
             catch (Exception e) {
                 System.out.println("Invalid file!");

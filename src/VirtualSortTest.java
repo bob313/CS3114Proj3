@@ -44,8 +44,27 @@ public class VirtualSortTest
         VirtualSort.generateFile("input.txt", "10", 'a');
         VirtualSort.generateFile("input2.txt", "10", 'b');
         VirtualSort.main(args);
-        assertTrue(fileChecker.checkFile("input.txt"));
+        assertFalse(fileChecker.checkFile("input.txt"));
         assertFalse(fileChecker.checkFile("input2.txt"));
+    }
+    
+    /**
+     * This method tests the main functionality of Sort on an "ascii" file
+     *
+     * @throws Exception
+     *             either a IOException or FileNotFoundException
+     */
+    public void testSortAscii()
+        throws Exception
+    {
+        String[] args = new String[3];
+        args[0] = "initial.txt";
+        args[1] = "1";
+        args[2] = "statFileInitial.txt";
+
+        VirtualSort.generateFile("initial.txt", "1", 'a');
+        VirtualSort.main(args);
+        assertTrue(fileChecker.checkFile("initial.txt"));
     }
 
 }
