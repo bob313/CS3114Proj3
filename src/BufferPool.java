@@ -56,7 +56,8 @@ public class BufferPool implements BufferPoolADT {
     public Buffer acquireBuffer(int block) {
         return null;
     }
-    
+
+
     /**
      * 
      * @param bytePos
@@ -65,6 +66,7 @@ public class BufferPool implements BufferPoolADT {
     public byte[] getRecord(int bytePos) {
         return Arrays.copyOfRange(blocks, bytePos, bytePos + 1);
     }
+
 
     /**
      * 
@@ -83,10 +85,13 @@ public class BufferPool implements BufferPoolADT {
      */
     public void swapBytes(int pre, int post) {
         try {
-            data.write(Arrays.copyOfRange(blocks, pre, pre + 1), pre, 1);
+            data.write(blocks, pre, 1);
             data.seek(0);
-            data.write(Arrays.copyOfRange(blocks, post, post + 1), post, 1);
+            data.write(blocks, post, 1);
             data.seek(0);
+            byte temp = blocks[pre];
+            blocks[pre] = blocks[post];
+            blocks[post] = temp;
         }
         catch (Exception e) {
             System.out.println("FAILED");

@@ -54,6 +54,7 @@ public class Sorting {
                 pool.swapBytes(min, i);
             }
         }
+        System.out.println();
     }
 
 
