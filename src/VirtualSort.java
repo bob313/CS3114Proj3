@@ -58,6 +58,13 @@ public class VirtualSort {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		System.out.println("Hello, World");
+	    if (args.length == 3) {
+	        try {
+	            BufferPool pool = new BufferPool(args[0]);
+	        }
+	        catch (Exception e) {
+	            System.out.println("Invalid file!");
+	        }
+	    }
 	}
 }

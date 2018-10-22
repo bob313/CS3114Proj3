@@ -15,9 +15,12 @@ import java.util.Queue;
 public class BufferPool implements BufferPoolADT {
     Queue<Integer> q = new LinkedList<>();
 
-    public BufferPool() throws IOException {
-        RandomAccessFile file = new RandomAccessFile("file.txt", "rw");
-        file.close();
+
+    public BufferPool(String file) throws IOException {
+        RandomAccessFile data = new RandomAccessFile(file, "rw");
+        long length = data.length();
+        long recs = length / 4096;
+        long cnt = 0;
     }
 
 
@@ -28,12 +31,13 @@ public class BufferPool implements BufferPoolADT {
         return null;
     }
 
+
     /**
      * Return the key
      */
-     private short getkey(byte[] rec) {
-      ByteBuffer bb = ByteBuffer.wrap(rec);
-      return bb.getShort();
-     }
+    private short getkey(byte[] rec) {
+        ByteBuffer bb = ByteBuffer.wrap(rec);
+        return bb.getShort();
+    }
 
 }
