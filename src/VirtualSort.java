@@ -67,10 +67,8 @@ public class VirtualSort {
     public static void main(String[] args) {
         if (args != null && args.length == 3) {
             try {
-                BufferPool pool = new BufferPool(args[0]);
-                Sorting sort = new Sorting(pool);
-                sort.sort();
-                pool.data.close();
+                Sorting sort = new Sorting(args[0], args[1]);
+                //sort.sort();
             }
             catch (Exception e) {
                 System.out.println("Invalid file!");

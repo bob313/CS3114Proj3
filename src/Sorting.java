@@ -1,3 +1,4 @@
+import java.io.IOException;
 import java.nio.ByteBuffer;
 
 /**
@@ -14,9 +15,11 @@ public class Sorting {
     /**
      * 
      * @param pool
+     * @throws IOException 
      */
-    public Sorting(BufferPool pool) {
-        this.pool = pool;
+    public Sorting(String arg, String size) throws IOException {
+        pool = new BufferPool(arg, Integer.parseInt(size));
+        quicksort(pool.blocks, 0, pool.blocks.length);
     }
 
 
@@ -42,17 +45,15 @@ public class Sorting {
      */
     public void sort() {
         int n = pool.blocks.length;
-        for (int i = 0; i < n - 1; i++) {
-            if (this.getValue(pool.getBytes(i)) != 32) {
-                int min = i;
-                for (int j = i + 1; j < n; j++) {
-                    if (this.getValue(pool.getBytes(j)) != 32 && this.getValue(
-                        pool.getBytes(j)) < this.getValue(pool.getBytes(min))) {
-                        min = j;
-                    }
+        for (int i = 0; i < n; i = i + 1) {
+            int min = i;
+            for (int j = i + 1; j < n; j = j + 1) {
+                if (this.getValue(pool.getBytes(j)) < this.getValue(pool
+                    .getBytes(min))) {
+                    min = j;
                 }
-                pool.swapBytes(min, i);
             }
+            pool.swapBytes(min, i);
         }
         System.out.println();
     }

@@ -13,4 +13,13 @@ public interface BufferPoolADT {
      * @return a pointer to a buffer object
      */
     Buffer acquireBuffer(int block);
+    
+    /**
+     * 
+     * @param bytePos
+     * @return
+     */
+    public byte[] getBytes(int bytePos);
+    
+    
 }

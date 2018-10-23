@@ -2,8 +2,6 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.Queue;
 
 /**
  * Buffer pool to store info from binary file
@@ -14,10 +12,9 @@ import java.util.Queue;
  */
 @SuppressWarnings("unused")
 public class BufferPool implements BufferPoolADT {
-    Queue<Integer> q = new LinkedList<>();
     RandomAccessFile data;
-    byte[] blocks = new byte[4096];
-    long length = 0;
+    byte[] blocks;
+    long len = 0;
     long block = 0;
     long recs = 0;
     long count = 0;
@@ -34,21 +31,30 @@ public class BufferPool implements BufferPoolADT {
      * @throws IOException
      *             in case file doesn't exist
      */
-    public BufferPool(String file) throws IOException {
+    public BufferPool(String file, int size) throws IOException {
         data = new RandomAccessFile(file, "rw");
-        length = data.length();
-        block = length / 4096;
+        len = data.length();
+        block = len / 4096;
         recs = block * 4;
+        if (block > 10)
+            block = 9;
+        blocks = new byte[(int)(len / 4)];
         // while (count < recs) {
         count++;
-        data.readFully(blocks);
         data.seek(0);
-        record = Arrays.copyOfRange(blocks, 0, 4);
-        key = Arrays.copyOfRange(record, 0, 2);
-        value = Arrays.copyOfRange(record, 2, 4);
+        for (int i = 0; i < blocks.length; i++) {
+            blocks[i] = (byte)data.read();
+            if (i != blocks.length - 1) {
+                while (blocks[i] == 32) {
+                    blocks[i] = (byte)data.read();
+                }
+                System.out.println("I " + i + " block len" + blocks.length);
+            }
+        }
+        data.seek(0);
+        System.out.println("LENGTH" + data.length());
         // }
     }
-
 
     /**
      * @param block
@@ -85,9 +91,10 @@ public class BufferPool implements BufferPoolADT {
      */
     public void swapBytes(int pre, int post) {
         try {
-            data.write(blocks, pre, 1);
-            data.seek(0);
-            data.write(blocks, post, 1);
+            data.seek((pre * 4) + 1);
+            data.write(blocks[post]);
+            data.seek((post * 4) + 1);
+            data.write(blocks[pre]);
             data.seek(0);
             byte temp = blocks[pre];
             blocks[pre] = blocks[post];
