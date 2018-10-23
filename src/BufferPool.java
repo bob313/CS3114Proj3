@@ -33,27 +33,7 @@ public class BufferPool implements BufferPoolADT {
      */
     public BufferPool(String file, int size) throws IOException {
         data = new RandomAccessFile(file, "rw");
-        len = data.length();
-        block = len / 4096;
-        recs = block * 4;
-        if (block > 10)
-            block = 9;
-        blocks = new byte[(int)(len / 4)];
-        // while (count < recs) {
-        count++;
         data.seek(0);
-        for (int i = 0; i < blocks.length; i++) {
-            blocks[i] = (byte)data.read();
-            if (i != blocks.length - 1) {
-                while (blocks[i] == 32) {
-                    blocks[i] = (byte)data.read();
-                }
-                System.out.println("I " + i + " block len" + blocks.length);
-            }
-        }
-        data.seek(0);
-        System.out.println("LENGTH" + data.length());
-        // }
     }
 
     /**
