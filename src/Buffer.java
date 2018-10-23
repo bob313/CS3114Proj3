@@ -9,34 +9,69 @@ import java.nio.ByteBuffer;
  */
 @SuppressWarnings("unused")
 public class Buffer implements BufferADT {
-    private short key;
-    private short value;
+    private byte[] block;
+    private boolean dirt;
+    private int blockNum;
     
-    public Buffer() {
-        
+    /**
+     * Sets up the Buffer setting dirt to false and setting the
+     * key and value. Also sets pPosition to the position of 
+     * the Buffer in the file.
+     * @param k the key
+     * @param v the value
+     */
+    public Buffer(byte[] blk, int pos) {
+        block = blk;
+        dirt = false;
+        blockNum = pos;
     }
     
-    public byte[] readBlock() {
-        // TODO Auto-generated method stub
-        return null;
+    /**
+     * Gets the blockNum of the buffer.
+     * @return the blockNum
+     */
+    public int getBlockNum() {
+        return blockNum;
     }
 
 
+    /**
+     * Gets the byte array of the buffer.
+     * @return the byte array
+     */
     public byte[] getDataPointer() {
-        // TODO Auto-generated method stub
-        return null;
+        
+        return block;
     }
 
 
+    /**
+     * Sets the Buffer to be dirty.
+     * This signifies that a change has been made.
+     */
     public void markDirty() {
-        // TODO Auto-generated method stub
+        dirt = true;
 
+    }
+    
+    /**
+     * Checks if the Buffer is dirty.
+     * @return true if dirty false if not
+     */
+    public boolean getDirt() {
+        return dirt;
     }
 
 
     public void releaseBuffer() {
         // TODO Auto-generated method stub
 
+    }
+
+    @Override
+    public byte[] readBlock() {
+        // TODO Auto-generated method stub
+        return null;
     }
 
 
