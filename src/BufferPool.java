@@ -12,15 +12,9 @@ import java.util.Arrays;
  */
 @SuppressWarnings("unused")
 public class BufferPool implements BufferPoolADT {
-    RandomAccessFile data;
-    byte[] blocks;
-    long len = 0;
-    long block = 0;
-    long recs = 0;
-    long count = 0;
-    byte[] record;
-    byte[] key;
-    byte[] value;
+    private RandomAccessFile data;
+    private Buffer[] pool;
+    private int pSize;
 
 
     /**
@@ -34,59 +28,112 @@ public class BufferPool implements BufferPoolADT {
     public BufferPool(String file, int size) throws IOException {
         data = new RandomAccessFile(file, "rw");
         data.seek(0);
+        pool = new Buffer[size];
+        pSize = 0;
+        
     }
 
     /**
-     * @param block
+     * Acquires the Buffer for block 'block' and adds it to the pool. 
+     * The buffer is made up of the 4 byte sequence where the first 2 
+     * are the key and the second 2 are the value.
+     * @param block the block number of the buffer to be acquired
      */
     public Buffer acquireBuffer(int block) {
+        Buffer newBuff = checkPool(block);
+        if (newBuff != null) {
+            byte[] temp = new byte[4096];
+            try {
+                data.read(temp, block * 4096, 4096);
+                data.seek(0);
+            }
+            catch (IOException e) {
+                System.out.println("IOException: Failed to acquire Buffer");
+                e.printStackTrace();
+            }
+            newBuff = new Buffer(temp, block);
+            addToPool(newBuff);
+        }
+        else {
+            setRecent(newBuff);
+        }
+        return newBuff;
+    }
+
+
+    /**
+     * Marks the given Buffer as most recently used by
+     * moving it to the end of the array.
+     * @param newBuff the Buffer to be moved
+     */
+    private void setRecent(Buffer newBuff) {
+        int index = pSize;
+        for (int i = 0; i < pSize; i++) {
+            if (pool[i].getBlockNum() == newBuff.getBlockNum()) {
+                index = i;
+            }
+        }
+        for (int i = index + 1; i < pSize; i++) {
+            pool[i - 1] = pool[i];
+        }
+        pool[pSize - 1] = newBuff;
+        
+    }
+
+    /**
+     * Checks the pool to see if a Buffer of block 'block'
+     * exists in it.
+     * @param block the block number to look for
+     * @return the Buffer with that block number, null if none exists
+     */
+    private Buffer checkPool(int block) {
+        for (int i = 0; i < pSize; i++) {
+            if (pool[i].getBlockNum() == block) {
+                return pool[i];
+            }
+        }
         return null;
     }
 
-
     /**
-     * 
-     * @param bytePos
-     * @return
+     * Adds a Buffer to the pool.
+     * @param newBuff the buffer to be added
      */
-    public byte[] getRecord(int bytePos) {
-        return Arrays.copyOfRange(blocks, bytePos, bytePos + 1);
+    private void addToPool(Buffer newBuff) {
+       if (pool[pSize] == pool[pool.length - 1]) { 
+           dumpLRU();
+           pool[pSize] = newBuff;
+       }
+       pool[pSize] = newBuff;
+       pSize++;
+        
     }
 
-
     /**
-     * 
-     * @param bytePos
-     * @return
+     * Dumps the least recently used element from the pool.
+     * If the dumped Buffer was dirty the data file is updated.
      */
+    private void dumpLRU() {
+        Buffer oldBuff = pool[0];
+        for (int i = 1; i < pool.length; i++) {
+            pool[i - 1] = pool[i];
+        }
+        pool[pool.length - 1] = null;
+        if (oldBuff.getDirt()) {
+            try {
+                data.write(oldBuff.getDataPointer(), oldBuff.getBlockNum() * 4096, 4096);
+            }
+            catch (IOException e) {
+                System.out.println("IOException: Failed to update file");
+                e.printStackTrace();
+            }
+        }
+    }
+
+    @Override
     public byte[] getBytes(int bytePos) {
-        return Arrays.copyOfRange(blocks, bytePos, bytePos + 4);
+        // TODO Auto-generated method stub
+        return null;
     }
 
-
-    /**
-     * 
-     * @param pre
-     * @param post
-     */
-    public void swapBytes(int pre, int post) {
-        try {
-            data.seek((pre * 4) + 1);
-            data.write(blocks[post]);
-            data.seek((post * 4) + 1);
-            data.write(blocks[pre]);
-            data.seek(0);
-            byte temp = blocks[pre];
-            blocks[pre] = blocks[post];
-            blocks[post] = temp;
-        }
-        catch (Exception e) {
-            System.out.println("FAILED");
-        }
-// for (int i = 0; i < 4; i++) {
-// byte temp = blocks[post];
-// blocks[post + i] = blocks[pre + i];
-// blocks[pre + i] = temp;
-// }
-    }
 }
