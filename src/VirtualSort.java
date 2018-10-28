@@ -63,12 +63,12 @@ public class VirtualSort {
      * The entry point of the application
      * 
      * @param args
+     *            is the string of arguments main is receiving
      */
     public static void main(String[] args) {
         if (args != null && args.length == 3) {
             try {
-                Sorting sort = new Sorting(args[0], args[1]);
-                //sort.sort();
+                new Sorting(args[0], args[1]);
             }
             catch (Exception e) {
                 System.out.println("Invalid file!");

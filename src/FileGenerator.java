@@ -12,8 +12,8 @@ import java.util.*;
  * @version Sep 28, 2014
  */
 public class FileGenerator
-{
-    private static final int NUM_RECS = 2048;        // Because they are short
+{ //was 2048
+    private static final int NUM_RECS = 16;        // Because they are short 
 
     /** Initialize the random variable */
     static private Random    value    = new Random(); // Hold the Random class

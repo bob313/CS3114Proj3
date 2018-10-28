@@ -9,22 +9,30 @@ import java.nio.ByteBuffer;
  *
  */
 public class Sorting {
-    BufferPool pool;
+    private FakeBufferPool pool;
+    private int len = 4;
 
 
     /**
      * 
-     * @param pool
-     * @throws IOException 
+     * @param arg
+     *            is the file
+     * @param size
+     *            is the amount of blocks
+     * @throws IOException
      */
     public Sorting(String arg, String size) throws IOException {
-        pool = new BufferPool(arg, Integer.parseInt(size));
-        quicksort(pool.blocks, 0, pool.blocks.length);
+        pool = new FakeBufferPool(arg, Integer.parseInt(size));
+        quicksort(pool.getBlocks(), 0, (int)pool.getLength() / 4 - 1);
+        pool.writeto();
     }
 
 
     /**
-     * Return the key
+     * 
+     * @param rec
+     *            is the record to get the key from
+     * @return the short key
      */
     private short getkey(byte[] rec) {
         ByteBuffer bb = ByteBuffer.wrap(rec);
@@ -33,68 +41,73 @@ public class Sorting {
 
 
     /**
-     * Return the value
+     * 
+     * @param block
+     *            byte array containing the record
+     * @param index
+     *            the records index
+     * @return the record
      */
-    private int getValue(byte[] rec) {
-        return (int)rec[0];
+    private byte[] getRecord(byte[] block, int index) {
+        byte[] rec = new byte[2];
+        rec[0] = block[index];
+        rec[1] = block[index + 1];
+        return rec;
     }
 
 
-    /**
-     * currently just insertion sort
-     */
-    public void sort() {
-        int n = pool.blocks.length;
-        for (int i = 0; i < n; i = i + 1) {
-            int min = i;
-            for (int j = i + 1; j < n; j = j + 1) {
-                if (this.getValue(pool.getBytes(j)) < this.getValue(pool
-                    .getBytes(min))) {
-                    min = j;
-                }
-            }
-            pool.swapBytes(min, i);
-        }
-        System.out.println();
-    }
-
+// /**
+// * Return the value
+// */
+// private int getValue(byte[] rec) {
+// return (int)rec[0];
+// }
 
     /**
      * 
      * @param arr
-     * @param left
-     * @param right
-     * @param pivot
-     * @return
-     */
-    public int partition(byte[] arr, int left, int right, int pivot) {
-        while (left <= right) { // Move bounds inward until they meet
-            while (arr[left] < arr[pivot]) {
-                left++;
-            }
-            while ((right >= left) && (arr[right] >= arr[pivot])) {
-                right--;
-            }
-            if (right > left) {
-                pool.swapBytes(left, right); // Swap out-of-place values
-            }
-        }
-        return left; // Return first position in right partition
-    }
-
-
-    /**
-     * 
-     * @param arr
+     *            is the byte array
      * @param start
+     *            is the starting index
      * @param end
+     *            is the end index
+     * @param pivot
+     *            is what to compare the value to
+     * @return the index of the new partition
+     */
+    private int partition(byte[] arr, int start, int end, short pivot) {
+        while (start <= end) { // Move bounds inward until they meet
+            while (getkey(getRecord(arr, start * len)) < pivot) {
+                start++;
+            }
+            while ((end >= start) && (getkey(getRecord(arr, end
+                * len)) >= pivot)) {
+                end--;
+            }
+            if (end > start) {
+                pool.swapBytes(start * len, end * len); // Swap out-of-place
+                                                        // values
+            }
+        }
+        return start; // Return first position in right partition
+    }
+
+
+    /**
+     * @param arr
+     *            is the byte array
+     * @param start
+     *            is the starting index
+     * @param end
+     *            is the ending index
      */
     public void quicksort(byte[] arr, int start, int end) { // Quicksort
-        int pivotindex = (start + end) / 2; // Pick a pivot
-        pool.swapBytes(pivotindex, end); // Stick pivot at end
+        int pivot = (start + end) / 2; // Pick a pivot
+        pool.swapBytes(pivot * len, end * len); // Stick pivot at end
         // k will be the first position in the right subarray
-        int k = partition(arr, start, end - 1, arr[end]);
-        pool.swapBytes(k, end); // Put pivot in place
+        int k = partition(arr, start, end - 1, getkey(getRecord(arr, end
+            * len)));
+        pool.swapBytes(k * len, end * len); // Put pivot in place
         if ((k - start) > 1) {
             quicksort(arr, start, k - 1); // Sort left partition
         }
