@@ -15,6 +15,7 @@ public class BufferPool{
     private RandomAccessFile data;
     private Buffer[] pool;
     private int pSize;
+    private static final int blockSize = 4096;
 
 
     /**
@@ -43,9 +44,9 @@ public class BufferPool{
     public Buffer acquireBuffer(int block) {
         Buffer newBuff = checkPool(block);
         if (newBuff == null) {
-            byte[] temp = new byte[4096];
+            byte[] temp = new byte[blockSize];
             try {
-                data.read(temp, block * 4096, 4096);
+                data.read(temp, block * blockSize, blockSize);
                 data.seek(0);
             }
             catch (IOException e) {
@@ -122,7 +123,7 @@ public class BufferPool{
         pool[pool.length - 1] = null;
         if (oldBuff.getDirt()) {
             try {
-                data.write(oldBuff.getDataPointer(), oldBuff.getBlockNum() * 4096, 4096);
+                data.write(oldBuff.getDataPointer(), oldBuff.getBlockNum() * blockSize, blockSize);
             }
             catch (IOException e) {
                 System.out.println("IOException: Failed to update file");
@@ -138,7 +139,7 @@ public class BufferPool{
         for (int i = 0; i < pSize; i++) {
             if (pool[i].getDirt()) {
                 try {
-                    data.write(pool[i].getDataPointer(), pool[i].getBlockNum() * 4096, 4096);
+                    data.write(pool[i].getDataPointer(), pool[i].getBlockNum() * blockSize, blockSize);
                 }
                 catch (IOException e) {
                     System.out.println("IOException: Failed to update file on clear");
