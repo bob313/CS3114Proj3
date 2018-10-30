@@ -11,7 +11,7 @@ import java.util.Arrays;
  *
  */
 @SuppressWarnings("unused")
-public class BufferPool implements BufferPoolADT {
+public class BufferPool{
     private RandomAccessFile data;
     private Buffer[] pool;
     private int pSize;
@@ -22,6 +22,7 @@ public class BufferPool implements BufferPoolADT {
      * 
      * @param file
      *            is the file to read from
+     * @param size the size of the buffer pool.
      * @throws IOException
      *             in case file doesn't exist
      */
@@ -41,7 +42,7 @@ public class BufferPool implements BufferPoolADT {
      */
     public Buffer acquireBuffer(int block) {
         Buffer newBuff = checkPool(block);
-        if (newBuff != null) {
+        if (newBuff == null) {
             byte[] temp = new byte[4096];
             try {
                 data.read(temp, block * 4096, 4096);
@@ -130,10 +131,29 @@ public class BufferPool implements BufferPoolADT {
         }
     }
 
-    @Override
-    public byte[] getBytes(int bytePos) {
-        // TODO Auto-generated method stub
-        return null;
+    /**
+     * Clears the BufferPool, writing dirty Buffers back to the file in memory.
+     */
+    public void clearPool() {
+        for (int i = 0; i < pSize; i++) {
+            if (pool[i].getDirt()) {
+                try {
+                    data.write(pool[i].getDataPointer(), pool[i].getBlockNum() * 4096, 4096);
+                }
+                catch (IOException e) {
+                    System.out.println("IOException: Failed to update file on clear");
+                    e.printStackTrace();
+                }
+            }
+            pool[i] = null; //clears element from array
+        }
     }
-
+    
+    /**
+     * gets the pool array of the buffer pool.
+     * @return the pool array
+     */
+    public Buffer[] getPool() {
+        return pool;
+    }
 }
