@@ -1,3 +1,4 @@
+import java.io.FileOutputStream;
 import java.io.IOException;
 
 /**
@@ -68,7 +69,10 @@ public class VirtualSort {
     public static void main(String[] args) {
         if (args != null && args.length == 3) {
             try {
-                new Sorting(args[0], args[1]);
+                FileOutputStream file = new FileOutputStream(args[2]);
+                file.write(args[0].getBytes());
+                file.write("\n".getBytes());
+                new Sorting(args[0], args[1], file);
             }
             catch (Exception e) {
                 System.out.println("Invalid file!");

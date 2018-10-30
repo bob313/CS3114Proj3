@@ -61,9 +61,26 @@ public class VirtualSortTest extends TestCase {
         args[1] = "1";
         args[2] = "statFileInitial.txt";
 
-        VirtualSort.generateFile("initial.txt", "1", 'b');
+        VirtualSort.generateFile("initial.txt", "1", 'a');
         VirtualSort.main(args);
         assertTrue(fileChecker.checkFile("initial.txt"));
+    }
+    
+    /**
+     * This method tests Sorting a large "ascii" file
+     *
+     * @throws Exception
+     *             either a IOException or FileNotFoundException
+     */
+    public void testLargeSortAscii() throws Exception {
+        String[] args = new String[3];
+        args[0] = "Phat.txt";
+        args[1] = "10";
+        args[2] = "PhatStatFile.txt";
+
+        VirtualSort.generateFile("Phat.txt", "10000", 'a');
+        VirtualSort.main(args);
+        assertTrue(fileChecker.checkFile("Phat.txt"));
     }
 
 }
