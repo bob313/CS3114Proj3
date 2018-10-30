@@ -46,8 +46,11 @@ public class BufferPool{
         if (newBuff == null) {
             byte[] temp = new byte[blockSize];
             try {
-                data.read(temp, block * blockSize, blockSize);
-                data.seek(0);
+                data.seek((block - 1) * blockSize);
+                for (int i = 0; i < blockSize; i++) {
+                    temp[i] = (byte)data.read();
+                }
+                
             }
             catch (IOException e) {
                 System.out.println("IOException: Failed to acquire Buffer");
@@ -71,7 +74,7 @@ public class BufferPool{
     private void setRecent(Buffer newBuff) {
         int index = pSize;
         for (int i = 0; i < pSize; i++) {
-            if (pool[i].getBlockNum() == newBuff.getBlockNum()) {
+            if (pool[i] != null && pool[i].getBlockNum() == newBuff.getBlockNum()) {
                 index = i;
             }
         }
@@ -90,7 +93,7 @@ public class BufferPool{
      */
     private Buffer checkPool(int block) {
         for (int i = 0; i < pSize; i++) {
-            if (pool[i].getBlockNum() == block) {
+            if (pool[i] != null && pool[i].getBlockNum() == block) {
                 return pool[i];
             }
         }
@@ -102,12 +105,15 @@ public class BufferPool{
      * @param newBuff the buffer to be added
      */
     private void addToPool(Buffer newBuff) {
-       if (pool[pSize] == pool[pool.length - 1]) { 
+       if (pSize == pool.length) { 
            dumpLRU();
-           pool[pSize] = newBuff;
+           pool[pSize - 1] = newBuff;
        }
-       pool[pSize] = newBuff;
-       pSize++;
+       else {
+           pool[pSize] = newBuff;
+           pSize++;
+       }
+       
         
     }
 
@@ -123,7 +129,10 @@ public class BufferPool{
         pool[pool.length - 1] = null;
         if (oldBuff.getDirt()) {
             try {
-                data.write(oldBuff.getDataPointer(), oldBuff.getBlockNum() * blockSize, blockSize);
+                data.seek((oldBuff.getBlockNum() - 1) * blockSize);
+                for (int i = 0; i < blockSize; i++) {
+                    data.write(oldBuff.getDataPointer()[i]);
+                }
             }
             catch (IOException e) {
                 System.out.println("IOException: Failed to update file");
@@ -139,7 +148,10 @@ public class BufferPool{
         for (int i = 0; i < pSize; i++) {
             if (pool[i].getDirt()) {
                 try {
-                    data.write(pool[i].getDataPointer(), pool[i].getBlockNum() * blockSize, blockSize);
+                    data.seek((pool[i].getBlockNum() - 1) * blockSize);
+                    for (int j = 0; j < blockSize; j++) {
+                        data.write(pool[j].getDataPointer()[j]);
+                    }
                 }
                 catch (IOException e) {
                     System.out.println("IOException: Failed to update file on clear");
