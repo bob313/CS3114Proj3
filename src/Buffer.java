@@ -8,7 +8,7 @@ import java.nio.ByteBuffer;
  *
  */
 @SuppressWarnings("unused")
-public class Buffer implements BufferADT {
+public class Buffer{
     private byte[] block;
     private boolean dirt;
     private int blockNum;
@@ -62,17 +62,6 @@ public class Buffer implements BufferADT {
         return dirt;
     }
 
-
-    public void releaseBuffer() {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    public byte[] readBlock() {
-        // TODO Auto-generated method stub
-        return null;
-    }
 
 
 }
