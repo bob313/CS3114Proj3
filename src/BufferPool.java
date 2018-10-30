@@ -16,6 +16,7 @@ public class BufferPool{
     private Buffer[] pool;
     private int pSize;
     private static final int blockSize = 4096;
+    private long fileSize;
 
 
     /**
@@ -30,6 +31,7 @@ public class BufferPool{
     public BufferPool(String file, int size) throws IOException {
         data = new RandomAccessFile(file, "rw");
         data.seek(0);
+        fileSize = data.length();
         pool = new Buffer[size];
         pSize = 0;
         
@@ -168,5 +170,13 @@ public class BufferPool{
      */
     public Buffer[] getPool() {
         return pool;
+    }
+    
+    /**
+     * Gets the file size of the input file.
+     * @return the size of the file
+     */
+    public long getFileSize() {
+        return fileSize;
     }
 }
