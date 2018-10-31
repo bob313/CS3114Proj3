@@ -17,6 +17,9 @@ public class BufferPool {
     private int pSize;
     private static final int blockSize = 4096;
     private long fileSize;
+    private int cacheHits;
+    private int diskReads;
+    private int diskWrites;
 
 
     /**
@@ -35,6 +38,9 @@ public class BufferPool {
         fileSize = data.length();
         pool = new Buffer[size];
         pSize = 0;
+        cacheHits = 0;
+        diskReads = 0;
+        diskWrites = 0;
 
     }
 
@@ -54,6 +60,7 @@ public class BufferPool {
             try {
                 data.seek((block - 1) * blockSize);
                 data.read(temp);
+                diskReads++;
             }
             catch (IOException e) {
                 System.out.println("IOException: Failed to acquire Buffer");
@@ -82,6 +89,7 @@ public class BufferPool {
             if (pool[i] != null && pool[i].getBlockNum() == newBuff
                 .getBlockNum()) {
                 index = i;
+                break;
             }
         }
         for (int i = index + 1; i < pSize; i++) {
@@ -103,6 +111,7 @@ public class BufferPool {
     private Buffer checkPool(int block) {
         for (int i = 0; i < pSize; i++) {
             if (pool[i] != null && pool[i].getBlockNum() == block) {
+                cacheHits++;
                 return pool[i];
             }
         }
@@ -142,9 +151,8 @@ public class BufferPool {
         if (oldBuff.getDirt()) {
             try {
                 data.seek((oldBuff.getBlockNum() - 1) * blockSize);
-                //for (int i = 0; i < blockSize; i++) {
                 data.write(oldBuff.getDataPointer());
-                //}
+                diskWrites++;
             }
             catch (IOException e) {
                 System.out.println("IOException: Failed to update file");
@@ -162,9 +170,8 @@ public class BufferPool {
             if (pool[i].getDirt()) {
                 try {
                     data.seek((pool[i].getBlockNum() - 1) * blockSize);
-                    //for (int j = 0; j < blockSize; j++) {
-                        data.write(pool[i].getDataPointer());
-                    //}
+                    data.write(pool[i].getDataPointer());
+                    diskWrites++;
                 }
                 catch (IOException e) {
                     System.out.println(
@@ -194,5 +201,31 @@ public class BufferPool {
      */
     public long getFileSize() {
         return fileSize;
+    }
+    
+    /**
+     * Gets the cache hits; the number of times a block is found in the pool
+     * when requested.
+     * @return the cacheHits integer
+     */
+    public int getCacheHits() {
+        return cacheHits;
+    }
+    
+    /**
+     * Gets the number of disk reads
+     * @return number of disk reads
+     */
+    public int getReads() {
+        return diskReads;
+    }
+    
+
+    /**
+     * Gets the number of disk writes
+     * @return number of disk writes
+     */
+    public int getWrites() {
+        return diskWrites;
     }
 }
