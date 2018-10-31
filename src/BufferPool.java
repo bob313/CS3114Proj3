@@ -183,6 +183,13 @@ public class BufferPool {
         }
     }
 
+    /**
+     * Closes the data file of BufferPool
+     * @throws IOException 
+     */
+    public void closeFile() throws IOException {
+        data.close();
+    }
 
     /**
      * gets the pool array of the buffer pool.
@@ -228,4 +235,6 @@ public class BufferPool {
     public int getWrites() {
         return diskWrites;
     }
+    
+   
 }
