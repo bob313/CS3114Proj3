@@ -36,15 +36,15 @@ public class Sorting {
      */
     public Sorting(String arg, String size, FileOutputStream stat)
         throws IOException {
-//        blockNum = Integer.parseInt(size);
-//        pool = new BufferPool(arg, blockNum);
-//        currBlock = pool.acquireBuffer(blockNum).getDataPointer();
-//        long begin = System.currentTimeMillis();
-//        quicksort(0, (int)pool.getFileSize() / 4 - 1);
-//        long finish = System.currentTimeMillis() - begin;
-//        System.out.println(finish);
-//        stat.write(String.valueOf(finish).getBytes());
-//        pool.clearPool();
+        blockNum = Integer.parseInt(size);
+        pool = new BufferPool(arg, blockNum);
+        currBlock = pool.acquireBuffer(blockNum).getDataPointer();
+        long begin = System.currentTimeMillis();
+        quicksort(0, (int)pool.getFileSize() / 4 - 1);
+        long finish = System.currentTimeMillis() - begin;
+        System.out.println(finish);
+        stat.write(String.valueOf(finish).getBytes());
+        pool.clearPool();
     }
 
 
@@ -100,141 +100,144 @@ public class Sorting {
         if (blocknum == blockNum) {
             key[0] = currBlock[index - blocknum * bSize];
             key[1] = currBlock[index - blocknum * bSize + 1];
-            return (ByteBuffer.wrap(rec)).getShort();
+            return (ByteBuffer.wrap(key)).getShort();
         }
         blockNum = blocknum;
         buff = pool.acquireBuffer(blocknum + 1);
         currBlock = buff.getDataPointer();
         key[0] = currBlock[index - blocknum * bSize];
         key[1] = currBlock[index - blocknum * bSize + 1];
-        return (ByteBuffer.wrap(rec)).getShort();
+        return (ByteBuffer.wrap(key)).getShort();
     }
 
+
+// private void swap(int left, int right) {
+// int blockA = left / bSize;
+// int blockB = right / bSize;
+// byte temp;
+// buff = pool.acquireBuffer(blockB + 1);
+// System.out.println("L: " + currBlock[left - blockA * bSize + 1] + " R: "
+// + currBlock[right - blockA * bSize + 1]);
+// for (int i = 0; i < 4; i++) {
+// temp = currBlock[left - blockA * bSize + i];
+// currBlock[left - blockA * bSize + i] = currBlock[right - blockB
+// * bSize + i];
+// currBlock[right - blockB * bSize + i] = temp;
+// }
+// buff.setByteArray(currBlock);
+// buff.markDirty();
+// }
+
+    /**
+     * Swaps the values
+     *
+     * @param left
+     * @param right
+     */
     private void swap(int left, int right) {
         int blockA = left / bSize;
         int blockB = right / bSize;
-        byte temp;
-        buff = pool.acquireBuffer(blockB + 1);
-        System.out.println("L: "+currBlock[left-blockA*bSize+1]+" R: "+currBlock[right-blockA*bSize+1]);
-        for (int i = 0; i < 4; i++) {
-            temp = currBlock[left - blockA * bSize + i];
-          currBlock[left - blockA * bSize + i] = currBlock[right - blockB * bSize + i];
-          currBlock[right - blockB * bSize + i] = temp;
+        if (blockA == blockB && blockA == blockNum) {
+            System.out.println("PRE 1");
+            if (getRecord(currBlock, left, 1) != getRecord(currBlock, right,
+                2)) {
+                System.out.println("Faile 1");
+                for (int i = 0; i < 4; i++) {
+                    temp = currBlock[left - blockA * bSize + i];
+                    currBlock[left - blockA * bSize + i] = currBlock[right
+                        - blockA * bSize + i];
+                    currBlock[right - blockA * bSize + i] = temp;
+// temp = buff.getDataPointer()[left - blockA * bSize + i];
+// buff.getDataPointer()[left - blockA * bSize + i] = buff
+// .getDataPointer()[right - blockA * bSize + i];
+// buff.getDataPointer()[right - blockA * bSize + i] = temp;
+                }
+                buff.setByteArray(currBlock);
+                buff.markDirty();
+            }
         }
-        buff.setByteArray(currBlock);
-        buff.markDirty();
+        else if (blockA == blockB) {
+            buff = pool.acquireBuffer(blockB + 1);
+            blockNum = blockA;
+            currBlock = buff.getDataPointer();
+            System.out.println("PRE 2");
+            if (getRecord(currBlock, left, 1) != getRecord(currBlock, right,
+                2)) {
+                System.out.println("Faile 2");
+                for (int i = 0; i < 4; i++) {
+                    temp = currBlock[left - blockA * bSize + i];
+                    currBlock[left - blockA * bSize + i] = currBlock[right
+                        - blockA * bSize + i];
+                    currBlock[right - blockA * bSize + i] = temp;
+                }
+                buff.setByteArray(currBlock);
+                buff.markDirty();
+            }
+        }
+        else if (blockA == blockNum || blockB == blockNum) {
+            Buffer buffB;
+            if (blockA == blockNum) {
+                buffB = pool.acquireBuffer(blockB + 1);
+                System.out.println("PRE 3 A: " + blockA + " B: " + blockB
+                    + " Nu: " + blockNum);
+                // rec2 = getRecord(buffB.getDataPointer(), right);
+                // rec3 = getRecord(currBlock, left);
+                if (getRecord(currBlock, left, 1) != getRecord(buffB
+                    .getDataPointer(), right, 2)) {
+                    System.out.println("Faile 3");
+                    for (int i = 0; i < 4; i++) {
+                        temp = currBlock[left - blockA * bSize + i];
+                        currBlock[left - blockA * bSize + i] = buffB
+                            .getDataPointer()[right - blockB * bSize + i];
+                        buffB.getDataPointer()[right - blockB * bSize + i] =
+                            temp;
+                    }
+                    buff.setByteArray(currBlock);
+                    buff.markDirty();
+                    buffB.markDirty();
+                }
+            }
+            else {
+                buffB = pool.acquireBuffer(blockA + 1);
+                System.out.println("PRE 4");
+                // rec2 = getRecord(buffB.getDataPointer(), left);
+                if (getRecord(currBlock, right, 1) != getRecord(buffB
+                    .getDataPointer(), left, 2)) {
+                    System.out.println("Faile 4");
+                    for (int i = 0; i < 4; i++) {
+                        temp = currBlock[right - blockB * bSize + i];
+                        currBlock[right - blockB * bSize + i] = buffB
+                            .getDataPointer()[left - blockA * bSize + i];
+                        buffB.getDataPointer()[left - blockA * bSize + i] =
+                            temp;
+                    }
+                    buff.setByteArray(currBlock);
+                    buff.markDirty();
+                    buffB.markDirty();
+                }
+            }
+        }
+        else {
+            buff = pool.acquireBuffer(blockA + 1);
+            currBlock = buff.getDataPointer();
+            blockNum = blockA;
+            Buffer buffB = pool.acquireBuffer(blockB + 1);
+            // System.out.println("PRE 5");
+            if (getRecord(currBlock, left, 1) != getRecord(buffB
+                .getDataPointer(), right, 2)) {
+                // System.out.println("Faile 5");
+                for (int i = 0; i < 4; i++) {
+                    temp = currBlock[left - blockA * bSize + i];
+                    currBlock[left - blockA * bSize + i] = buffB
+                        .getDataPointer()[right - blockB * bSize + i];
+                    buffB.getDataPointer()[right - blockB * bSize + i] = temp;
+                }
+                buff.setByteArray(currBlock);
+                buff.markDirty();
+                buffB.markDirty();
+            }
+        }
     }
-
-//    /**
-//     * Swaps the values
-//     * 
-//     * @param left
-//     * @param right
-//     */
-//    private void swap(int left, int right) {
-//        int blockA = left / bSize;
-//        int blockB = right / bSize;
-//        if (blockA == blockB && blockA == blockNum) {
-//            System.out.println("PRE 1");
-//   //         if (getRecord(currBlock, left, 1) != getRecord(currBlock, right,
-//   //             2)) {
-//                System.out.println("Faile 1");
-//                for (int i = 0; i < 4; i++) {
-////                    temp = currBlock[left - blockA * bSize + i];
-////                    currBlock[left - blockA * bSize + i] = currBlock[right
-////                        - blockA * bSize + i];
-////                    currBlock[right - blockA * bSize + i] = temp;
-//                    temp = buff.getDataPointer()[left - blockA * bSize + i];
-//                    buff.getDataPointer()[left - blockA * bSize + i] = buff.getDataPointer()[right
-//                        - blockA * bSize + i];
-//                    buff.getDataPointer()[right - blockA * bSize + i] = temp;
-//                }
-//                //buff.setByteArray(currBlock);
-//                buff.markDirty();
-//  //          }
-//        }
-//        else if (blockA == blockB) {
-//            buff = pool.acquireBuffer(blockB + 1);
-//            blockNum = blockA;
-//            currBlock = buff.getDataPointer();
-//            System.out.println("PRE 2");
-//  //          if (getRecord(currBlock, left, 1) != getRecord(currBlock, right,
-//  //              2)) {
-//                System.out.println("Faile 2");
-//                for (int i = 0; i < 4; i++) {
-//                    temp = currBlock[left - blockA * bSize + i];
-//                    currBlock[left - blockA * bSize + i] = currBlock[right
-//                        - blockA * bSize + i];
-//                    currBlock[right - blockA * bSize + i] = temp;
-//                }
-//                buff.setByteArray(currBlock);
-//                buff.markDirty();
-// //           }
-//        }
-//        else if (blockA == blockNum || blockB == blockNum) {
-//            Buffer buffB;
-//            if (blockA == blockNum) {
-//                buffB = pool.acquireBuffer(blockB + 1);
-//                System.out.println("PRE 3 A: " + blockA + " B: " + blockB
-//                    + " Nu: " + blockNum);
-//                // rec2 = getRecord(buffB.getDataPointer(), right);
-//                // rec3 = getRecord(currBlock, left);
-//     //           if (getRecord(currBlock, left, 1) != getRecord(buffB
-//     //               .getDataPointer(), right, 2)) {
-//                    System.out.println("Faile 3");
-//                    for (int i = 0; i < 4; i++) {
-//                        temp = currBlock[left - blockA * bSize + i];
-//                        currBlock[left - blockA * bSize + i] = buffB
-//                            .getDataPointer()[right - blockB * bSize + i];
-//                        buffB.getDataPointer()[right - blockB * bSize + i] =
-//                            temp;
-//                    }
-//                    buff.setByteArray(currBlock);
-//                    buff.markDirty();
-//                    buffB.markDirty();
-//    //            }
-//            }
-//            else {
-//                buffB = pool.acquireBuffer(blockA + 1);
-//                System.out.println("PRE 4");
-//                // rec2 = getRecord(buffB.getDataPointer(), left);
-//   //             if (getRecord(currBlock, right, 1) != getRecord(buffB
-//    //                .getDataPointer(), left, 2)) {
-//                    System.out.println("Faile 4");
-//                    for (int i = 0; i < 4; i++) {
-//                        temp = currBlock[right - blockB * bSize + i];
-//                        currBlock[right - blockB * bSize + i] = buffB
-//                            .getDataPointer()[left - blockA * bSize + i];
-//                        buffB.getDataPointer()[left - blockA * bSize + i] =
-//                            temp;
-//                    }
-//                    buff.setByteArray(currBlock);
-//                    buff.markDirty();
-//                    buffB.markDirty();
-//                }
-//     //       }
-//        }
-//        else {
-//            buff = pool.acquireBuffer(blockA + 1);
-//            currBlock = buff.getDataPointer();
-//            blockNum = blockA;
-//            Buffer buffB = pool.acquireBuffer(blockB + 1);
-//            // System.out.println("PRE 5");
-//      //      if (getRecord(currBlock, left, 1) != getRecord(buffB
-//       //         .getDataPointer(), right, 2)) {
-//                // System.out.println("Faile 5");
-//                for (int i = 0; i < 4; i++) {
-//                    temp = currBlock[left - blockA * bSize + i];
-//                    currBlock[left - blockA * bSize + i] = buffB
-//                        .getDataPointer()[right - blockB * bSize + i];
-//                    buffB.getDataPointer()[right - blockB * bSize + i] = temp;
-//                }
-//                buff.setByteArray(currBlock);
-//                buff.markDirty();
-//                buffB.markDirty();
-//  //          }
-//        }
-//    }
 
 
     /**
@@ -249,6 +252,8 @@ public class Sorting {
      */
     private int partition(int start, int end, short pivot) {
         while (start <= end) { // Move bounds inward until they meet
+//            System.out.println("SKEY: " + (int)getKey(start * len) + " EKY: "
+//                + getKey(end * len) + " PI " + pivot);
             while (getKey(start * len) < pivot) {
                 start++;
             }
@@ -278,7 +283,9 @@ public class Sorting {
      */
     private int median(int start, int end) {
         int mid = (start + end) / 2;
-        System.out.println("Med: "+mid+" S: "+start+" E: "+end);
+//        System.out.println("Med: " + mid + " S: " + start + " E: " + end);
+        // System.out.println("M: " + currBlock[mid*len +1] + " S: " +
+        // currBlock[start*len +1] + " E: " + currBlock[end*len +1]);
         if (getKey(end * len) < getKey(start * len)) {
             swap(start * len, end * len);
         }
@@ -288,7 +295,8 @@ public class Sorting {
         if (getKey(end * len) < getKey(mid * len)) {
             swap(end * len, mid * len);
         }
-        System.out.println("Med Swap?");
+        // System.out.println("M: " + currBlock[mid*len +1] + " S: " +
+        // currBlock[start*len +1] + " E: " + currBlock[end*len +1]);
         return mid;
     }
 
@@ -308,23 +316,26 @@ public class Sorting {
             }
         }
     }
-    
+
+
     public void setarr(byte[] arr) {
         currBlock = arr;
     }
-    
+
+
     private void testswap(int left, int right) {
         for (int i = 0; i < 4; i++) {
-            temp = currBlock[left+ i];
-          currBlock[left + i] = currBlock[right + i];
-          currBlock[right + i] = temp;
+            temp = currBlock[left + i];
+            currBlock[left + i] = currBlock[right + i];
+            currBlock[right + i] = temp;
         }
     }
-    
+
+
     public void testInsertion(int start, int end) {
         for (int i = start + 1; i <= end; i++) {
-            for (int j = i; j > start && currBlock[(j - 1) * len + 1] > currBlock[j
-                * len + 1]; j--) {
+            for (int j = i; j > start && currBlock[(j - 1) * len
+                + 1] > currBlock[j * len + 1]; j--) {
                 testswap((j - 1) * len, j * len);
             }
         }
@@ -349,9 +360,8 @@ public class Sorting {
                 swap(pivot * len, end * len); // Stick pivot at end
                 // k will be the first position in the right subarray
                 int k = partition(start, end - 1, getKey(end * len));
-                 System.out.println("S: " + start + " P: " + pivot + " E: " +
-                 end
-                 + " K: " + k);
+// System.out.println("S: " + start + " P: " + pivot + " E: " + end
+// + " K: " + k);
                 swap(k * len, end * len); // Put pivot in place
                 if ((k - start) < (end - k)) { // Find smaller partition
                     quicksort(start, k - 1); // Sort smaller partition
