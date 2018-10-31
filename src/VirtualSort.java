@@ -70,8 +70,8 @@ public class VirtualSort {
         if (args != null && args.length == 3) {
             try {
                 FileOutputStream file = new FileOutputStream(args[2]);
-                file.write(args[0].getBytes());
-                file.write("\n".getBytes());
+                //file.write(args[0].getBytes());
+                //file.write("\n".getBytes());
                 new Sorting(args[0], args[1], file);
             }
             catch (Exception e) {
