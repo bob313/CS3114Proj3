@@ -11,11 +11,6 @@ public class BufferPoolTest extends TestCase{
     
     
     public void testBufferASCII() throws IOException {
-        //FileGenerator generator = new FileGenerator();
-        //String[] in = new String[3];
-        //in[0] = "b";
-        //in[1] = "BinaryTest";
-        //in[2] = "3";
         VirtualSort.generateFile("BinaryTest.txt", "3", 'a');
         
         bufPool = new BufferPool("BinaryTest.txt", 2);
@@ -27,16 +22,24 @@ public class BufferPoolTest extends TestCase{
         assertEquals(1, temp2.getBlockNum());
         assertEquals(temp2.getBlockNum(), bufPool.getPool()[1].getBlockNum());
         
+        assertEquals(2, bufPool.getReads());
+        
         bufPool.acquireBuffer(2);
         assertEquals(temp.getBlockNum(), bufPool.getPool()[1].getBlockNum());
+        
+        assertEquals(1, bufPool.getCacheHits());
         
         Buffer temp3 = bufPool.acquireBuffer(3);
         assertEquals(3, temp3.getBlockNum());
         assertEquals(temp3.getBlockNum(), bufPool.getPool()[1].getBlockNum());
         
+        assertEquals(3, bufPool.getReads());
+        assertEquals(0, bufPool.getWrites());
+        
         
         bufPool.getPool()[0].markDirty();
         bufPool.acquireBuffer(1);
+        assertEquals(1, bufPool.getWrites());
         assertEquals(temp2.getBlockNum(), bufPool.getPool()[1].getBlockNum());
         assertEquals(temp3.getBlockNum(), bufPool.getPool()[0].getBlockNum());
         
