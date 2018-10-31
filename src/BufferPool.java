@@ -16,6 +16,7 @@ public class BufferPool {
     private Buffer[] pool;
     private int pSize;
     private static final int blockSize = 4096;
+    private static final int recordSize = 4;
     private long fileSize;
     private int cacheHits;
     private int diskReads;
@@ -53,7 +54,9 @@ public class BufferPool {
      * @param block
      *            the block number of the buffer to be acquired
      */
-    public Buffer acquireBuffer(int block) {
+    public byte[] acquireBuffer(int index) {
+        int numRecs = blockSize / recordSize;
+        int block = (index / numRecs) + 1;
         Buffer newBuff = checkPool(block);
         if (newBuff == null) {
             byte[] temp = new byte[blockSize];
@@ -72,7 +75,11 @@ public class BufferPool {
         else {
             setRecent(newBuff);
         }
-        return newBuff;
+        byte[] record = new byte[]{ newBuff.getDataPointer()[index - (block * numRecs)],
+            newBuff.getDataPointer()[index - (block * numRecs) + 1], newBuff
+                .getDataPointer()[index - (block * numRecs) + 2], newBuff
+                    .getDataPointer()[index - (block * numRecs) + 3] };
+        return record;
     }
 
 
@@ -184,12 +191,21 @@ public class BufferPool {
     }
 
     /**
+     * Marks the most recently accessed buffer as dirty
+     */
+    public void markDirty() {
+        pool[pSize - 1].markDirty();
+    }
+
+    /**
      * Closes the data file of BufferPool
-     * @throws IOException 
+     * 
+     * @throws IOException
      */
     public void closeFile() throws IOException {
         data.close();
     }
+
 
     /**
      * gets the pool array of the buffer pool.
@@ -209,32 +225,36 @@ public class BufferPool {
     public long getFileSize() {
         return fileSize;
     }
-    
+
+
     /**
      * Gets the cache hits; the number of times a block is found in the pool
      * when requested.
+     * 
      * @return the cacheHits integer
      */
     public int getCacheHits() {
         return cacheHits;
     }
-    
+
+
     /**
      * Gets the number of disk reads
+     * 
      * @return number of disk reads
      */
     public int getReads() {
         return diskReads;
     }
-    
+
 
     /**
      * Gets the number of disk writes
+     * 
      * @return number of disk writes
      */
     public int getWrites() {
         return diskWrites;
     }
-    
-   
+
 }
