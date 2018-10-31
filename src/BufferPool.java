@@ -75,10 +75,10 @@ public class BufferPool {
         else {
             setRecent(newBuff);
         }
-        byte[] record = new byte[]{ newBuff.getDataPointer()[index - (block * numRecs)],
-            newBuff.getDataPointer()[index - (block * numRecs) + 1], newBuff
-                .getDataPointer()[index - (block * numRecs) + 2], newBuff
-                    .getDataPointer()[index - (block * numRecs) + 3] };
+        byte[] record = new byte[]{ newBuff.getDataPointer()[index - ((block - 1) * numRecs)],
+            newBuff.getDataPointer()[index - ((block - 1) * numRecs) + 1], newBuff
+                .getDataPointer()[index - ((block - 1) * numRecs) + 2], newBuff
+                    .getDataPointer()[index - ((block - 1) * numRecs) + 3] };
         return record;
     }
 
