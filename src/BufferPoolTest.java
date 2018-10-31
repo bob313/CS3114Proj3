@@ -48,7 +48,7 @@ public class BufferPoolTest extends TestCase{
         assertNull(bufPool.getPool()[0]);
         assertNull(bufPool.getPool()[1]);
         
-        
+        bufPool.closeFile();
     }
     
     
