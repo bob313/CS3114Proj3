@@ -11,7 +11,7 @@ import java.util.Arrays;
  *
  */
 @SuppressWarnings("unused")
-public class BufferPool{
+public class BufferPool {
     private RandomAccessFile data;
     private Buffer[] pool;
     private int pSize;
@@ -24,7 +24,8 @@ public class BufferPool{
      * 
      * @param file
      *            is the file to read from
-     * @param size the size of the buffer pool.
+     * @param size
+     *            the size of the buffer pool.
      * @throws IOException
      *             in case file doesn't exist
      */
@@ -34,14 +35,17 @@ public class BufferPool{
         fileSize = data.length();
         pool = new Buffer[size];
         pSize = 0;
-        
+
     }
 
+
     /**
-     * Acquires the Buffer for block 'block' and adds it to the pool. 
-     * The buffer is made up of the 4 byte sequence where the first 2 
+     * Acquires the Buffer for block 'block' and adds it to the pool.
+     * The buffer is made up of the 4 byte sequence where the first 2
      * are the key and the second 2 are the value.
-     * @param block the block number of the buffer to be acquired
+     * 
+     * @param block
+     *            the block number of the buffer to be acquired
      */
     public Buffer acquireBuffer(int block) {
         Buffer newBuff = checkPool(block);
@@ -49,10 +53,7 @@ public class BufferPool{
             byte[] temp = new byte[blockSize];
             try {
                 data.seek((block - 1) * blockSize);
-                for (int i = 0; i < blockSize; i++) {
-                    temp[i] = (byte)data.read();
-                }
-                
+                data.read(temp);
             }
             catch (IOException e) {
                 System.out.println("IOException: Failed to acquire Buffer");
@@ -71,12 +72,15 @@ public class BufferPool{
     /**
      * Marks the given Buffer as most recently used by
      * moving it to the end of the array.
-     * @param newBuff the Buffer to be moved
+     * 
+     * @param newBuff
+     *            the Buffer to be moved
      */
     private void setRecent(Buffer newBuff) {
         int index = pSize;
         for (int i = 0; i < pSize; i++) {
-            if (pool[i] != null && pool[i].getBlockNum() == newBuff.getBlockNum()) {
+            if (pool[i] != null && pool[i].getBlockNum() == newBuff
+                .getBlockNum()) {
                 index = i;
             }
         }
@@ -84,13 +88,16 @@ public class BufferPool{
             pool[i - 1] = pool[i];
         }
         pool[pSize - 1] = newBuff;
-        
+
     }
+
 
     /**
      * Checks the pool to see if a Buffer of block 'block'
      * exists in it.
-     * @param block the block number to look for
+     * 
+     * @param block
+     *            the block number to look for
      * @return the Buffer with that block number, null if none exists
      */
     private Buffer checkPool(int block) {
@@ -102,22 +109,25 @@ public class BufferPool{
         return null;
     }
 
+
     /**
      * Adds a Buffer to the pool.
-     * @param newBuff the buffer to be added
+     * 
+     * @param newBuff
+     *            the buffer to be added
      */
     private void addToPool(Buffer newBuff) {
-       if (pSize == pool.length) { 
-           dumpLRU();
-           pool[pSize - 1] = newBuff;
-       }
-       else {
-           pool[pSize] = newBuff;
-           pSize++;
-       }
-       
-        
+        if (pSize == pool.length) {
+            dumpLRU();
+            pool[pSize - 1] = newBuff;
+        }
+        else {
+            pool[pSize] = newBuff;
+            pSize++;
+        }
+
     }
+
 
     /**
      * Dumps the least recently used element from the pool.
@@ -132,9 +142,9 @@ public class BufferPool{
         if (oldBuff.getDirt()) {
             try {
                 data.seek((oldBuff.getBlockNum() - 1) * blockSize);
-                for (int i = 0; i < blockSize; i++) {
-                    data.write(oldBuff.getDataPointer()[i]);
-                }
+                //for (int i = 0; i < blockSize; i++) {
+                data.write(oldBuff.getDataPointer());
+                //}
             }
             catch (IOException e) {
                 System.out.println("IOException: Failed to update file");
@@ -142,6 +152,7 @@ public class BufferPool{
             }
         }
     }
+
 
     /**
      * Clears the BufferPool, writing dirty Buffers back to the file in memory.
@@ -151,29 +162,34 @@ public class BufferPool{
             if (pool[i].getDirt()) {
                 try {
                     data.seek((pool[i].getBlockNum() - 1) * blockSize);
-                    for (int j = 0; j < blockSize; j++) {
-                        data.write(pool[j].getDataPointer()[j]);
-                    }
+                    //for (int j = 0; j < blockSize; j++) {
+                        data.write(pool[i].getDataPointer());
+                    //}
                 }
                 catch (IOException e) {
-                    System.out.println("IOException: Failed to update file on clear");
+                    System.out.println(
+                        "IOException: Failed to update file on clear");
                     e.printStackTrace();
                 }
             }
-            pool[i] = null; //clears element from array
+            pool[i] = null; // clears element from array
         }
     }
-    
+
+
     /**
      * gets the pool array of the buffer pool.
+     * 
      * @return the pool array
      */
     public Buffer[] getPool() {
         return pool;
     }
-    
+
+
     /**
      * Gets the file size of the input file.
+     * 
      * @return the size of the file
      */
     public long getFileSize() {

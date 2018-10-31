@@ -16,7 +16,7 @@ public class BufferPoolTest extends TestCase{
         //in[0] = "b";
         //in[1] = "BinaryTest";
         //in[2] = "3";
-        VirtualSort.generateFile("BinaryTest.txt", "3", "a");
+        VirtualSort.generateFile("BinaryTest.txt", "3", 'a');
         
         bufPool = new BufferPool("BinaryTest.txt", 2);
         

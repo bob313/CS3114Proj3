@@ -40,8 +40,11 @@ public class Buffer{
      * @return the byte array
      */
     public byte[] getDataPointer() {
-        
         return block;
+    }
+    
+    public void setByteArray(byte[] arr) {
+        block = arr;
     }
 
 

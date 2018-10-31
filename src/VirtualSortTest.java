@@ -78,7 +78,7 @@ public class VirtualSortTest extends TestCase {
         args[1] = "10";
         args[2] = "PhatStatFile.txt";
 
-        VirtualSort.generateFile("Phat.txt", "10000", 'a');
+        VirtualSort.generateFile("Phat.txt", "1000", 'a');
         VirtualSort.main(args);
         assertTrue(fileChecker.checkFile("Phat.txt"));
     }
