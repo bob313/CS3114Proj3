@@ -22,6 +22,8 @@ public class Sorting {
     private static int cut = 10;
     private Buffer buff;
     // private byte[] block = new byte[4096];
+    private long startTime;
+    private long endTime;
 
 
     /**
@@ -36,16 +38,35 @@ public class Sorting {
      */
     public Sorting(String arg, String size, FileOutputStream stat)
         throws IOException {
+        
         blockNum = Integer.parseInt(size);
         pool = new BufferPool(arg, blockNum);
         currBlock = pool.acquireBuffer(blockNum).getDataPointer();
-        long begin = System.currentTimeMillis();
+        //long begin = System.currentTimeMillis();
+        startTime = System.currentTimeMillis();
         quicksort(0, (int)pool.getFileSize() / 4 - 1);
-        long finish = System.currentTimeMillis() - begin;
-        System.out.println(finish);
-        stat.write(String.valueOf(finish).getBytes());
+        //long finish = System.currentTimeMillis() - begin;
+        endTime = System.currentTimeMillis();
+        System.out.println(endTime - startTime);
+        //stat.write(String.valueOf(finish).getBytes());
         pool.clearPool();
+        generateOutput(stat, arg);
     }
+
+    private void generateOutput(FileOutputStream stat, String arg) throws IOException {
+        
+        stat.write("Name: ".getBytes());
+        stat.write(arg.getBytes());
+        stat.write("     Hits: ".getBytes());
+        stat.write(String.valueOf(pool.getCacheHits()).getBytes());
+        stat.write("     Reads: ".getBytes());
+        stat.write(String.valueOf(pool.getWrites()).getBytes());
+        stat.write("     Writes: ".getBytes());
+        stat.write(String.valueOf(pool.getWrites()).getBytes());
+        stat.write("     Exec Time: ".getBytes());
+        stat.write(String.valueOf(endTime - startTime).getBytes());
+        stat.write("\n".getBytes());
+     }
 
 
 //
