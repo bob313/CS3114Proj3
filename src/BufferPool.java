@@ -45,6 +45,18 @@ public class BufferPool {
 
     }
 
+    /**
+     * Sets the bytes at a given index in a buffer in the pool.
+     */
+    public void setBytes(byte[] bytes, int index) {
+        int numRecs = blockSize / recordSize;
+        int block = (index / numRecs) + 1;
+        Buffer tempBuff = checkPool(block);
+        for (int i = 0; i < bytes.length; i++) {
+            tempBuff.getDataPointer()[index - ((block - 1) * numRecs) + i] = bytes[i];
+        }
+        tempBuff.markDirty();
+    }
 
     /**
      * Acquires the Buffer for block 'block' and adds it to the pool.
@@ -188,13 +200,6 @@ public class BufferPool {
             }
             pool[i] = null; // clears element from array
         }
-    }
-
-    /**
-     * Marks the most recently accessed buffer as dirty
-     */
-    public void markDirty() {
-        pool[pSize - 1].markDirty();
     }
 
     /**
