@@ -38,35 +38,37 @@ public class Sorting {
      */
     public Sorting(String arg, String size, FileOutputStream stat)
         throws IOException {
-        
+
         blockNum = Integer.parseInt(size);
         pool = new BufferPool(arg, blockNum);
         currBlock = pool.acquireBuffer(blockNum).getDataPointer();
-        //long begin = System.currentTimeMillis();
+        // long begin = System.currentTimeMillis();
         startTime = System.currentTimeMillis();
         quicksort(0, (int)pool.getFileSize() / 4 - 1);
-        //long finish = System.currentTimeMillis() - begin;
+        // long finish = System.currentTimeMillis() - begin;
         endTime = System.currentTimeMillis();
         System.out.println(endTime - startTime);
-        //stat.write(String.valueOf(finish).getBytes());
+        // stat.write(String.valueOf(finish).getBytes());
         pool.clearPool();
         generateOutput(stat, arg);
     }
 
-    private void generateOutput(FileOutputStream stat, String arg) throws IOException {
-        
+
+    private void generateOutput(FileOutputStream stat, String arg)
+        throws IOException {
+
         stat.write("Name: ".getBytes());
         stat.write(arg.getBytes());
         stat.write("     Hits: ".getBytes());
         stat.write(String.valueOf(pool.getCacheHits()).getBytes());
         stat.write("     Reads: ".getBytes());
-        stat.write(String.valueOf(pool.getWrites()).getBytes());
+        stat.write(String.valueOf(pool.getReads()).getBytes());
         stat.write("     Writes: ".getBytes());
         stat.write(String.valueOf(pool.getWrites()).getBytes());
         stat.write("     Exec Time: ".getBytes());
         stat.write(String.valueOf(endTime - startTime).getBytes());
         stat.write("\n".getBytes());
-     }
+    }
 
 
 //
@@ -112,9 +114,9 @@ public class Sorting {
     private boolean compRec(byte[] arr, int left, int right) {
         int lt = left - (left / bSize) * bSize;
         int rt = right - (right / bSize) * bSize;
-        System.out.println("L: " + lt + " R: " + rt);
-        System.out.println("COMPARE: " + currBlock[lt + 1] + " AND: " + arr[rt
-            + 1]);
+    //    System.out.println("L: " + lt + " R: " + rt);
+    //    System.out.println("COMPARE: " + currBlock[lt + 1] + " AND: " + arr[rt
+    //        + 1]);
         return !(currBlock[lt] == arr[rt] && currBlock[lt + 1] == arr[rt + 1]);
     }
 
@@ -157,7 +159,7 @@ public class Sorting {
                 // if (getRecord(currBlock, left, 1) != getRecord(currBlock,
                 // right,
                 // 2)) {
-                System.out.println("Faile 1");
+                // System.out.println("Faile 1");
                 for (int i = 0; i < 4; i++) {
                     temp = currBlock[left - blockA * bSize + i];
                     currBlock[left - blockA * bSize + i] = currBlock[right
@@ -177,7 +179,7 @@ public class Sorting {
                 // if (getRecord(currBlock, left, 1) != getRecord(currBlock,
                 // right,
                 // 2)) {
-                System.out.println("Faile 2");
+                // System.out.println("Faile 2");
                 for (int i = 0; i < 4; i++) {
                     temp = currBlock[left - blockA * bSize + i];
                     currBlock[left - blockA * bSize + i] = currBlock[right
@@ -199,7 +201,7 @@ public class Sorting {
                 if (compRec(buffB.getDataPointer(), left, right)) {
                     // if (getRecord(currBlock, left, 1) != getRecord(buffB
                     // .getDataPointer(), right, 2)) {
-                    System.out.println("Faile 3");
+                    // System.out.println("Faile 3");
                     for (int i = 0; i < 4; i++) {
                         temp = currBlock[left - blockA * bSize + i];
                         currBlock[left - blockA * bSize + i] = buffB
@@ -214,12 +216,12 @@ public class Sorting {
             }
             else {
                 buffB = pool.acquireBuffer(blockA + 1);
-                System.out.println("PRE 4");
+                // System.out.println("PRE 4");
 // rec2 = getRecord(buffB.getDataPointer(), left);
                 if (compRec(buffB.getDataPointer(), right, left)) {
                     // if (getRecord(currBlock, right, 1) != getRecord(buffB
                     // .getDataPointer(), left, 2)) {
-                    System.out.println("Faile 4");
+                    // System.out.println("Faile 4");
                     for (int i = 0; i < 4; i++) {
                         temp = currBlock[right - blockB * bSize + i];
                         currBlock[right - blockB * bSize + i] = buffB
@@ -242,7 +244,7 @@ public class Sorting {
             if (compRec(buffB.getDataPointer(), left, right)) {
                 // if (getRecord(currBlock, left, 1) != getRecord(buffB
                 // .getDataPointer(), right, 2)) {
-                System.out.println("Faile 5");
+                // System.out.println("Faile 5");
                 for (int i = 0; i < 4; i++) {
                     temp = currBlock[left - blockA * bSize + i];
                     currBlock[left - blockA * bSize + i] = buffB

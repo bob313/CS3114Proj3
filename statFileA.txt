@@ -1,2 +1,1 @@
-input.txt
-1624
+Name: input.txt     Hits: 35809     Reads: 37     Writes: 34     Exec Time: 140

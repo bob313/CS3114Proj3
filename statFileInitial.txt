@@ -1,2 +1,1 @@
-initial.txt
-811
+Name: initial.txt     Hits: 11094     Reads: 5     Writes: 5     Exec Time: 5
