@@ -34,8 +34,9 @@ public class BufferPoolTest extends TestCase{
         assertEquals(3, bufPool.getReads());
         assertEquals(0, bufPool.getWrites());
         
-        
-        bufPool.getPool()[0].markDirty();
+        byte[] test = " X  ".getBytes();
+        bufPool.setBytes(test, 0);
+        assertEquals(test[2], bufPool.getPool()[0].getDataPointer()[2]);
         bufPool.acquireBuffer(1200);
         assertEquals(1, bufPool.getWrites());
         assertEquals(2, bufPool.getPool()[1].getBlockNum());
