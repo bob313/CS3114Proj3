@@ -110,24 +110,6 @@ public class Sorting {
         return (ByteBuffer.wrap(key)).getShort();
     }
 
-
-// private void swap(int left, int right) {
-// int blockA = left / bSize;
-// int blockB = right / bSize;
-// byte temp;
-// buff = pool.acquireBuffer(blockB + 1);
-// System.out.println("L: " + currBlock[left - blockA * bSize + 1] + " R: "
-// + currBlock[right - blockA * bSize + 1]);
-// for (int i = 0; i < 4; i++) {
-// temp = currBlock[left - blockA * bSize + i];
-// currBlock[left - blockA * bSize + i] = currBlock[right - blockB
-// * bSize + i];
-// currBlock[right - blockB * bSize + i] = temp;
-// }
-// buff.setByteArray(currBlock);
-// buff.markDirty();
-// }
-
     /**
      * Swaps the values
      *
@@ -313,30 +295,6 @@ public class Sorting {
             for (int j = i; j > start && getKey((j - 1) * len) > getKey(j
                 * len); j--) {
                 swap((j - 1) * len, j * len);
-            }
-        }
-    }
-
-
-    public void setarr(byte[] arr) {
-        currBlock = arr;
-    }
-
-
-    private void testswap(int left, int right) {
-        for (int i = 0; i < 4; i++) {
-            temp = currBlock[left + i];
-            currBlock[left + i] = currBlock[right + i];
-            currBlock[right + i] = temp;
-        }
-    }
-
-
-    public void testInsertion(int start, int end) {
-        for (int i = start + 1; i <= end; i++) {
-            for (int j = i; j > start && currBlock[(j - 1) * len
-                + 1] > currBlock[j * len + 1]; j--) {
-                testswap((j - 1) * len, j * len);
             }
         }
     }
