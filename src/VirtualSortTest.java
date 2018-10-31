@@ -61,7 +61,7 @@ public class VirtualSortTest extends TestCase {
         args[1] = "5";
         args[2] = "statFileInitial.txt";
 
-        VirtualSort.generateFile("initial.txt", "5", 'a');
+        VirtualSort.generateFile("initial.txt", "5", 'b');
         VirtualSort.main(args);
         assertTrue(fileChecker.checkFile("initial.txt"));
     }

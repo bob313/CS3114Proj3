@@ -88,6 +88,16 @@ public class Sorting {
     }
 
 
+    private boolean compRec(byte[] arr, int left, int right) {
+        int lt = left - (left / bSize) * bSize;
+        int rt = right - (right / bSize) * bSize;
+        System.out.println("L: " + lt + " R: " + rt);
+        System.out.println("COMPARE: " + currBlock[lt + 1] + " AND: " + arr[rt
+            + 1]);
+        return !(currBlock[lt] == arr[rt] && currBlock[lt + 1] == arr[rt + 1]);
+    }
+
+
     /**
      * Found by CS3114 Staff on Piazza
      *
@@ -110,6 +120,7 @@ public class Sorting {
         return (ByteBuffer.wrap(key)).getShort();
     }
 
+
     /**
      * Swaps the values
      *
@@ -120,19 +131,17 @@ public class Sorting {
         int blockA = left / bSize;
         int blockB = right / bSize;
         if (blockA == blockB && blockA == blockNum) {
-            System.out.println("PRE 1");
-            if (getRecord(currBlock, left, 1) != getRecord(currBlock, right,
-                2)) {
+            // System.out.println("PRE 1");
+            if (compRec(currBlock, left, right)) {
+                // if (getRecord(currBlock, left, 1) != getRecord(currBlock,
+                // right,
+                // 2)) {
                 System.out.println("Faile 1");
                 for (int i = 0; i < 4; i++) {
                     temp = currBlock[left - blockA * bSize + i];
                     currBlock[left - blockA * bSize + i] = currBlock[right
                         - blockA * bSize + i];
                     currBlock[right - blockA * bSize + i] = temp;
-// temp = buff.getDataPointer()[left - blockA * bSize + i];
-// buff.getDataPointer()[left - blockA * bSize + i] = buff
-// .getDataPointer()[right - blockA * bSize + i];
-// buff.getDataPointer()[right - blockA * bSize + i] = temp;
                 }
                 buff.setByteArray(currBlock);
                 buff.markDirty();
@@ -142,9 +151,11 @@ public class Sorting {
             buff = pool.acquireBuffer(blockB + 1);
             blockNum = blockA;
             currBlock = buff.getDataPointer();
-            System.out.println("PRE 2");
-            if (getRecord(currBlock, left, 1) != getRecord(currBlock, right,
-                2)) {
+            // System.out.println("PRE 2");
+            if (compRec(currBlock, left, right)) {
+                // if (getRecord(currBlock, left, 1) != getRecord(currBlock,
+                // right,
+                // 2)) {
                 System.out.println("Faile 2");
                 for (int i = 0; i < 4; i++) {
                     temp = currBlock[left - blockA * bSize + i];
@@ -160,12 +171,13 @@ public class Sorting {
             Buffer buffB;
             if (blockA == blockNum) {
                 buffB = pool.acquireBuffer(blockB + 1);
-                System.out.println("PRE 3 A: " + blockA + " B: " + blockB
-                    + " Nu: " + blockNum);
-                // rec2 = getRecord(buffB.getDataPointer(), right);
-                // rec3 = getRecord(currBlock, left);
-                if (getRecord(currBlock, left, 1) != getRecord(buffB
-                    .getDataPointer(), right, 2)) {
+// System.out.println("PRE 3 A: " + blockA + " B: " + blockB
+// + " Nu: " + blockNum);
+// rec2 = getRecord(buffB.getDataPointer(), right);
+// rec3 = getRecord(currBlock, left);
+                if (compRec(buffB.getDataPointer(), left, right)) {
+                    // if (getRecord(currBlock, left, 1) != getRecord(buffB
+                    // .getDataPointer(), right, 2)) {
                     System.out.println("Faile 3");
                     for (int i = 0; i < 4; i++) {
                         temp = currBlock[left - blockA * bSize + i];
@@ -182,9 +194,10 @@ public class Sorting {
             else {
                 buffB = pool.acquireBuffer(blockA + 1);
                 System.out.println("PRE 4");
-                // rec2 = getRecord(buffB.getDataPointer(), left);
-                if (getRecord(currBlock, right, 1) != getRecord(buffB
-                    .getDataPointer(), left, 2)) {
+// rec2 = getRecord(buffB.getDataPointer(), left);
+                if (compRec(buffB.getDataPointer(), right, left)) {
+                    // if (getRecord(currBlock, right, 1) != getRecord(buffB
+                    // .getDataPointer(), left, 2)) {
                     System.out.println("Faile 4");
                     for (int i = 0; i < 4; i++) {
                         temp = currBlock[right - blockB * bSize + i];
@@ -205,9 +218,10 @@ public class Sorting {
             blockNum = blockA;
             Buffer buffB = pool.acquireBuffer(blockB + 1);
             // System.out.println("PRE 5");
-            if (getRecord(currBlock, left, 1) != getRecord(buffB
-                .getDataPointer(), right, 2)) {
-                // System.out.println("Faile 5");
+            if (compRec(buffB.getDataPointer(), left, right)) {
+                // if (getRecord(currBlock, left, 1) != getRecord(buffB
+                // .getDataPointer(), right, 2)) {
+                System.out.println("Faile 5");
                 for (int i = 0; i < 4; i++) {
                     temp = currBlock[left - blockA * bSize + i];
                     currBlock[left - blockA * bSize + i] = buffB
@@ -234,8 +248,8 @@ public class Sorting {
      */
     private int partition(int start, int end, short pivot) {
         while (start <= end) { // Move bounds inward until they meet
-//            System.out.println("SKEY: " + (int)getKey(start * len) + " EKY: "
-//                + getKey(end * len) + " PI " + pivot);
+// System.out.println("SKEY: " + (int)getKey(start * len) + " EKY: "
+// + getKey(end * len) + " PI " + pivot);
             while (getKey(start * len) < pivot) {
                 start++;
             }
@@ -265,9 +279,9 @@ public class Sorting {
      */
     private int median(int start, int end) {
         int mid = (start + end) / 2;
-//        System.out.println("Med: " + mid + " S: " + start + " E: " + end);
-        // System.out.println("M: " + currBlock[mid*len +1] + " S: " +
-        // currBlock[start*len +1] + " E: " + currBlock[end*len +1]);
+// System.out.println("Med: " + mid + " S: " + start + " E: " + end);
+// System.out.println("M: " + currBlock[mid*len +1] + " S: " +
+// currBlock[start*len +1] + " E: " + currBlock[end*len +1]);
         if (getKey(end * len) < getKey(start * len)) {
             swap(start * len, end * len);
         }
