@@ -42,11 +42,6 @@ public class Buffer{
     public byte[] getDataPointer() {
         return block;
     }
-    
-    public void setByteArray(byte[] arr) {
-        block = arr;
-    }
-
 
     /**
      * Sets the Buffer to be dirty.

@@ -1,1 +1,1 @@
-Name: input.txt     Hits: 35809     Reads: 37     Writes: 34     Exec Time: 140
+Name: input.txt     Hits: 39609     Reads: 34     Writes: 33     Exec Time: 177

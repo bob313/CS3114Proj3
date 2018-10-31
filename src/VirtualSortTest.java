@@ -58,10 +58,10 @@ public class VirtualSortTest extends TestCase {
     public void testSortAscii() throws Exception {
         String[] args = new String[3];
         args[0] = "initial.txt";
-        args[1] = "5";
+        args[1] = "10";
         args[2] = "statFileInitial.txt";
 
-        VirtualSort.generateFile("initial.txt", "5", 'b');
+        VirtualSort.generateFile("initial.txt", "200", 'a');
         VirtualSort.main(args);
         assertTrue(fileChecker.checkFile("initial.txt"));
     }
