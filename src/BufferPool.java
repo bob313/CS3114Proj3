@@ -15,8 +15,8 @@ public class BufferPool {
     private RandomAccessFile data;
     private Buffer[] pool;
     private int pSize;
-    private static final int blockSize = 4096;
-    private static final int recordSize = 4;
+    private static final int BLOCK_SIZE = 4096;
+    private static final int RECORD_SIZE = 4;
     private long fileSize;
     private int cacheHits;
     private int diskReads;
@@ -45,8 +45,8 @@ public class BufferPool {
         cacheHits = 0;
         diskReads = 0;
         diskWrites = 0;
-        readBytes = new byte[blockSize];
-        retBytes = new byte[recordSize];
+        readBytes = new byte[BLOCK_SIZE];
+        retBytes = new byte[RECORD_SIZE];
         //addBuffer = new Buffer(readBytes, 0);
     }
 
@@ -55,12 +55,12 @@ public class BufferPool {
      * Sets the bytes at a given index in a buffer in the pool.
      */
     public void setBytes(byte[] bytes, int index) {
-        int numRecs = blockSize / recordSize;
+        int numRecs = BLOCK_SIZE / RECORD_SIZE;
         int block = (index / numRecs) + 1;
         Buffer tempBuff = checkPool(block);
         if (tempBuff == null) {
             try {
-                data.seek((block - 1) * blockSize);
+                data.seek((block - 1) * BLOCK_SIZE);
                 data.read(readBytes);
                 diskReads++;
             }
@@ -72,7 +72,7 @@ public class BufferPool {
             addToPool(tempBuff);
         }
         for (int i = 0; i < bytes.length; i++) {
-            tempBuff.getDataPointer()[(index - ((block - 1) * numRecs))*recordSize + i] =
+            tempBuff.getDataPointer()[(index - ((block - 1) * numRecs))*RECORD_SIZE + i] =
                 bytes[i];
         }
         tempBuff.markDirty();
@@ -88,12 +88,12 @@ public class BufferPool {
      *            the block number of the buffer to be acquired
      */
     public byte[] acquireBuffer(int index) {
-        int numRecs = blockSize / recordSize;
+        int numRecs = BLOCK_SIZE / RECORD_SIZE;
         int block = (index / numRecs) + 1;
         Buffer newBuff = checkPool(block);
         if (newBuff == null) {
             try {
-                data.seek((block - 1) * blockSize);
+                data.seek((block - 1) * BLOCK_SIZE);
                 data.read(readBytes);
                 diskReads++;
             }
@@ -107,11 +107,11 @@ public class BufferPool {
         else {
             setRecent(newBuff);
         }
-        int temp = (index - ((block - 1) * numRecs)) * recordSize;
-        byte[] record = new byte[] { newBuff.getDataPointer()[temp], newBuff
-            .getDataPointer()[temp + 1], newBuff.getDataPointer()[temp + 2],
-            newBuff.getDataPointer()[temp + 3] };
-        return record;
+        int temp = (index - ((block - 1) * numRecs)) * RECORD_SIZE;
+        for (int i = 0; i < RECORD_SIZE; i++) {
+            retBytes[i] = newBuff.getDataPointer()[temp + i];
+        }
+        return retBytes.clone();
     }
 
 
@@ -189,7 +189,7 @@ public class BufferPool {
         pool[pool.length - 1] = null;
         if (oldBuff.getDirt()) {
             try {
-                data.seek((oldBuff.getBlockNum() - 1) * blockSize);
+                data.seek((oldBuff.getBlockNum() - 1) * BLOCK_SIZE);
                 data.write(oldBuff.getDataPointer());
                 diskWrites++;
             }
@@ -208,7 +208,7 @@ public class BufferPool {
         for (int i = 0; i < pSize; i++) {
             if (pool[i].getDirt()) {
                 try {
-                    data.seek((pool[i].getBlockNum() - 1) * blockSize);
+                    data.seek((pool[i].getBlockNum() - 1) * BLOCK_SIZE);
                     data.write(pool[i].getDataPointer());
                     diskWrites++;
                 }
