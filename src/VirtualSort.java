@@ -67,11 +67,9 @@ public class VirtualSort {
      *            is the string of arguments main is receiving
      */
     public static void main(String[] args) {
-        if (args != null && args.length == 3) {
+        if (args != null) {
             try {
                 FileOutputStream file = new FileOutputStream(args[2]);
-                //file.write(args[0].getBytes());
-                //file.write("\n".getBytes());
                 new Sorting(args[0], args[1], file);
             }
             catch (Exception e) {

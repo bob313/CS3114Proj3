@@ -8,7 +8,6 @@ import java.io.RandomAccessFile;
  * @version Oct 21 2018
  *
  */
-@SuppressWarnings("unused")
 public class BufferPool {
     private RandomAccessFile data;
     private Buffer[] pool;
@@ -21,7 +20,6 @@ public class BufferPool {
     private int diskWrites;
     private byte[] readBytes;
     private byte[] retBytes;
-    //private Buffer addBuffer;
 
 
     /**
@@ -45,12 +43,17 @@ public class BufferPool {
         diskWrites = 0;
         readBytes = new byte[BLOCK_SIZE];
         retBytes = new byte[RECORD_SIZE];
-        //addBuffer = new Buffer(readBytes, 0);
+        // addBuffer = new Buffer(readBytes, 0);
     }
 
 
     /**
      * Sets the bytes at a given index in a buffer in the pool.
+     * 
+     * @param bytes
+     *            is the byte array to set in the pool
+     * @param index
+     *            is the index to find in the pool to set the byte array
      */
     public void setBytes(byte[] bytes, int index) {
         int numRecs = BLOCK_SIZE / RECORD_SIZE;
@@ -70,8 +73,8 @@ public class BufferPool {
             addToPool(tempBuff);
         }
         for (int i = 0; i < bytes.length; i++) {
-            tempBuff.getDataPointer()[(index - ((block - 1) * numRecs))*RECORD_SIZE + i] =
-                bytes[i];
+            tempBuff.getDataPointer()[(index - ((block - 1) * numRecs))
+                * RECORD_SIZE + i] = bytes[i];
         }
         tempBuff.markDirty();
     }
@@ -82,7 +85,7 @@ public class BufferPool {
      * The buffer is made up of the 4 byte sequence where the first 2
      * are the key and the second 2 are the value.
      * 
-     * @param block
+     * @param index
      *            the block number of the buffer to be acquired
      */
     public byte[] acquireBuffer(int index) {

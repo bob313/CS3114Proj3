@@ -1,1 +1,0 @@
-Name: input.txt     Hits: 2215621     Reads: 30     Writes: 30     Exec Time: 458

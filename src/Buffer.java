@@ -1,4 +1,3 @@
-import java.nio.ByteBuffer;
 
 /**
  * Buffer class for managing buffer pool
@@ -8,26 +7,32 @@ import java.nio.ByteBuffer;
  *
  */
 @SuppressWarnings("unused")
-public class Buffer{
+public class Buffer {
     private byte[] block;
     private boolean dirt;
     private int blockNum;
-    
+
+
     /**
      * Sets up the Buffer setting dirt to false and setting the
-     * key and value. Also sets pPosition to the position of 
+     * key and value. Also sets pPosition to the position of
      * the Buffer in the file.
-     * @param k the key
-     * @param v the value
+     * 
+     * @param blk
+     *            the block
+     * @param pos
+     *            the position
      */
     public Buffer(byte[] blk, int pos) {
         block = blk;
         dirt = false;
         blockNum = pos;
     }
-    
+
+
     /**
      * Gets the blockNum of the buffer.
+     * 
      * @return the blockNum
      */
     public int getBlockNum() {
@@ -37,11 +42,13 @@ public class Buffer{
 
     /**
      * Gets the byte array of the buffer.
+     * 
      * @return the byte array
      */
     public byte[] getDataPointer() {
         return block;
     }
+
 
     /**
      * Sets the Buffer to be dirty.
@@ -51,15 +58,15 @@ public class Buffer{
         dirt = true;
 
     }
-    
+
+
     /**
      * Checks if the Buffer is dirty.
+     * 
      * @return true if dirty false if not
      */
     public boolean getDirt() {
         return dirt;
     }
-
-
 
 }

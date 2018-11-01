@@ -61,7 +61,7 @@ public class VirtualSortTest extends TestCase {
         args[1] = "10";
         args[2] = "statFileInitial.txt";
 
-        VirtualSort.generateFile("initial.txt", "100", 'a');
+        VirtualSort.generateFile("initial.txt", "100", 'b');
         VirtualSort.main(args);
         assertTrue(fileChecker.checkFile("initial.txt"));
     }
@@ -74,13 +74,12 @@ public class VirtualSortTest extends TestCase {
      */
     public void testLargeSortAscii() throws Exception {
         String[] args = new String[3];
-        args[0] = "Phat.txt";
+        args[0] = "iPhat.txt";
         args[1] = "10";
-        args[2] = "PhatStatFile.txt";
+        args[2] = "iPhatStatFile.txt";
 
-        VirtualSort.generateFile("Phat.txt", "1000", 'a');
+        VirtualSort.generateFile("iPhat.txt", "1000", 'a');
         VirtualSort.main(args);
-        assertTrue(fileChecker.checkFile("Phat.txt"));
+        assertTrue(fileChecker.checkFile("iPhat.txt"));
     }
-
 }
