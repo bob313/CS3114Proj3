@@ -134,54 +134,54 @@ public class Sorting {
     private void swap(int left, int right) {
         System.out.println("L: " + left + " R:" + right);
         if (left == startIndex && right == endIndex) {
-            System.out.println("swap1");
+ //           System.out.println("swap1");
             if (getkey(startrec) != getkey(endrec)) {
                 pool.setBytes(startrec, right);
                 pool.setBytes(endrec, left);
                 swapArray(startrec, endrec);
             }
-            System.out.println("fin 1");
+ //           System.out.println("fin 1");
         }
         else if (left == midIndex && right == startIndex) {
-            System.out.println("swap2");
+//            System.out.println("swap2");
             if (getkey(midrec) != getkey(startrec)) {
                 pool.setBytes(midrec, right);
                 pool.setBytes(startrec, left);
                 swapArray(startrec, midrec);
             }
-            System.out.println("fin 2");
+//            System.out.println("fin 2");
         }
         else if (left == endIndex && right == midIndex) {
-            System.out.println("swap3");
+//            System.out.println("swap3");
             if (getkey(endrec) != getkey(midrec)) {
                 pool.setBytes(endrec, right);
                 pool.setBytes(midrec, left);
                 swapArray(midrec, endrec);
             }
-            System.out.println("fin 3");
+ //           System.out.println("fin 3");
         }
         else if (left == midIndex && right == endIndex) {
-            System.out.println("swap4");
+ //           System.out.println("swap4");
             if (getkey(midrec) != getkey(endrec)) {
                 pool.setBytes(midrec, right);
                 pool.setBytes(endrec, left);
                 swapArray(midrec, endrec);
             }
-            System.out.println("fin 4");
+  //          System.out.println("fin 4");
         }
         else if (right == midIndex) {
-            System.out.println("swap5");
+  //          System.out.println("swap5");
             temprec = getRecord(left);
-            System.out.println(midrec[1]+"  AND  "+temprec[1]);
+  //          System.out.println(midrec[1]+"  AND  "+temprec[1]);
             if (getkey(midrec) != getkey(temprec)) {
                 pool.setBytes(midrec, left);
                 pool.setBytes(temprec, right);
                 swapArray(midrec, temprec);
             }
-            System.out.println("midIn: "+midIndex+"  midrec:  "+midrec[1]);
+  //          System.out.println("midIn: "+midIndex+"  midrec:  "+midrec[1]);
         }
         else {
-            System.out.println("swap6");
+  //          System.out.println("swap6");
             midIndex = right;
             temprec = getRecord(left);
             midrec = getRecord(right);
@@ -190,7 +190,7 @@ public class Sorting {
                 pool.setBytes(temprec, right);
                 swapArray(temprec, midrec);
             }
-            System.out.println("fin 6");
+  //          System.out.println("fin 6");
         }
     }
 
@@ -216,12 +216,12 @@ public class Sorting {
                 end--;
             }
             if (end > start) {
-                System.out.println("loop here? S and E" + start + "  "+end);
-                System.out.println("Indexs "+midIndex + "  midrec: "+midrec[1]);
-                byte[] t1 = getRecord(start);
-                byte[] t2 = getRecord(end);
-                System.out.println("StartKey: "+t1[1] + "  EndKey: " + t2[1]);
-                System.out.println(temprec[1]);
+//                System.out.println("loop here? S and E" + start + "  "+end);
+//                System.out.println("Indexs "+midIndex + "  midrec: "+midrec[1]);
+//                byte[] t1 = getRecord(start);
+//                byte[] t2 = getRecord(end);
+ //               System.out.println("StartKey: "+t1[1] + "  EndKey: " + t2[1]);
+ //               System.out.println(temprec[1]);
                 while (getkey(getRecord(start)) == getkey(getRecord(end)) && getkey(getRecord(end)) == pivot) {
                     start++;
                     end--;
@@ -247,7 +247,6 @@ public class Sorting {
      * @return the pivot point
      */
     private int median(int start, int end) {
-        System.out.println("or here");
         int mid = (start + end) / 2;
         if (startIndex != start) {
             startIndex = start;

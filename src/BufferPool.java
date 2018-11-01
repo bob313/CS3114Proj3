@@ -72,7 +72,7 @@ public class BufferPool {
             addToPool(tempBuff);
         }
         for (int i = 0; i < bytes.length; i++) {
-            tempBuff.getDataPointer()[(index - ((block - 1) * numRecs)*recordSize) + i] =
+            tempBuff.getDataPointer()[(index - ((block - 1) * numRecs))*recordSize + i] =
                 bytes[i];
         }
         tempBuff.markDirty();
