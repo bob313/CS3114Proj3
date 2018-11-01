@@ -55,13 +55,13 @@ public class VirtualSortTest extends TestCase {
      * @throws Exception
      *             either a IOException or FileNotFoundException
      */
-    public void testSortAscii() throws Exception {
+    public void testSortBinary() throws Exception {
         String[] args = new String[3];
         args[0] = "initial.txt";
         args[1] = "10";
         args[2] = "statFileInitial.txt";
 
-        VirtualSort.generateFile("initial.txt", "100", 'b');
+        VirtualSort.generateFile("initial.txt", "1000", 'b');
         VirtualSort.main(args);
         assertTrue(fileChecker.checkFile("initial.txt"));
     }

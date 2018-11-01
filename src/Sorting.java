@@ -84,7 +84,7 @@ public class Sorting {
 
 
     /**
-     * returnst he record
+     * returns the record
      * 
      * @param index
      *            index of the record
@@ -113,39 +113,39 @@ public class Sorting {
     }
 
 
-    /**
-     * Uses median of 3 points method to pick the pivot point
-     * What it does is it finds the mid point through conventional (start+end)/2
-     * but you then compare the 3 points and find the median value, as that is
-     * the better pivot point. You also sort the 3 points
-     * 
-     * @param start
-     *            starting index
-     * @param end
-     *            end index
-     * @return the pivot point
-     */
-    private short midpiv(int start, int end) {
-        short s = getkey(getRecord(start));
-        short e = getkey(getRecord(end));
-        short mid = getkey(getRecord((start + end) / 2));
-        if (s < e && s < mid) {
-            return s;
-        }
-        else if (mid < s && mid < e) {
-            return mid;
-        }
-        else if (e < mid && e < s) {
-            return e;
-        }
-        else if (e == mid) {
-            return s;
-        }
-        else if (mid == s) {
-            return e;
-        }
-        return mid;
-    }
+//    /**
+//     * Uses median of 3 points method to pick the pivot point
+//     * What it does is it finds the mid point through conventional (start+end)/2
+//     * but you then compare the 3 points and find the median value, as that is
+//     * the better pivot point. You also sort the 3 points
+//     * 
+//     * @param start
+//     *            starting index
+//     * @param end
+//     *            end index
+//     * @return the pivot point
+//     */
+//    private short midpiv(int start, int end) {
+//        short s = getkey(getRecord(start));
+//        short e = getkey(getRecord(end));
+//        short mid = getkey(getRecord((start + end) / 2));
+//        if (s < e && s < mid) {
+//            return s;
+//        }
+//        else if (mid < s && mid < e) {
+//            return mid;
+//        }
+//        else if (e < mid && e < s) {
+//            return e;
+//        }
+//        else if (e == mid) {
+//            return s;
+//        }
+//        else if (mid == s) {
+//            return e;
+//        }
+//        return mid;
+//    }
 
 
     /**
@@ -174,35 +174,38 @@ public class Sorting {
      *            is the ending index
      */
     public void quicksort(int start, int end) { // Quicksort
-        if (end - start < cut) {
-            insertion(start, end);
+        int left = start;
+        int right = end;
+        short pivot = getkey(getRecord(start));
+        // midpiv(start, end);// median of 3 method
+        int i = start;
+        while (i <= right) { // 3 way partition, sort left and right sides
+            short value = getkey(getRecord(i));
+            if (value < pivot) {
+                swap(left, i);
+                left++;
+                i++;
+            }
+            else if (value > pivot) {
+                swap(i, right);
+                right--;
+            }
+            else {
+                i++;
+            }
+        }
+        if ((left - start < cut)) {
+            insertion(start, left - 1);
         }
         else {
-            int left = start;
-            int right = end;
-            short pivot = midpiv(start, end); // median of 3 method
-            int i = start;
-            while (i <= right) { // 3 way partition, sort left and right sides
-                short value = getkey(getRecord(i));
-                if (value < pivot) {
-                    swap(left, i);
-                    left++;
-                    i++;
-                }
-                else if (value > pivot) {
-                    swap(i, right);
-                    right--;
-                }
-                else {
-                    i++;
-                }
-            }
-            if ((left - start > 1)) {
-                quicksort(start, left - 1);
-            }
-            if (end - right > 1) {
-                quicksort(right + 1, end);
-            }
+            quicksort(start, left - 1);
         }
+        if (end - right < cut) {
+            insertion(right + 1, end);
+        }
+        else {
+            quicksort(right + 1, end);
+        }
+
     }
 }
