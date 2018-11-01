@@ -1,7 +1,5 @@
 import java.io.IOException;
 import java.io.RandomAccessFile;
-import java.nio.ByteBuffer;
-import java.util.Arrays;
 
 /**
  * Buffer pool to store info from binary file
