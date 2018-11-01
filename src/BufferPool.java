@@ -81,9 +81,9 @@ public class BufferPool {
 
 
     /**
-     * Acquires the Buffer for block 'block' and adds it to the pool.
-     * The buffer is made up of the 4 byte sequence where the first 2
-     * are the key and the second 2 are the value.
+     * Acquires the Buffer for block that contains the record at
+     * 'index'and adds it to the pool. Then returns a byte array
+     *  of the record.
      * 
      * @param index
      *            the block number of the buffer to be acquired
