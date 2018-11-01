@@ -21,6 +21,9 @@ public class BufferPool {
     private int cacheHits;
     private int diskReads;
     private int diskWrites;
+    private byte[] readBytes;
+    private byte[] retBytes;
+    //private Buffer addBuffer;
 
 
     /**
@@ -42,7 +45,9 @@ public class BufferPool {
         cacheHits = 0;
         diskReads = 0;
         diskWrites = 0;
-
+        readBytes = new byte[blockSize];
+        retBytes = new byte[recordSize];
+        //addBuffer = new Buffer(readBytes, 0);
     }
 
 
@@ -53,8 +58,21 @@ public class BufferPool {
         int numRecs = blockSize / recordSize;
         int block = (index / numRecs) + 1;
         Buffer tempBuff = checkPool(block);
+        if (tempBuff == null) {
+            try {
+                data.seek((block - 1) * blockSize);
+                data.read(readBytes);
+                diskReads++;
+            }
+            catch (IOException e) {
+                System.out.println("IOException: Failed to acquire Buffer");
+                e.printStackTrace();
+            }
+            tempBuff = new Buffer(readBytes.clone(), block);
+            addToPool(tempBuff);
+        }
         for (int i = 0; i < bytes.length; i++) {
-            tempBuff.getDataPointer()[index - ((block - 1) * numRecs) + i] =
+            tempBuff.getDataPointer()[(index - ((block - 1) * numRecs)*recordSize) + i] =
                 bytes[i];
         }
         tempBuff.markDirty();
@@ -74,17 +92,16 @@ public class BufferPool {
         int block = (index / numRecs) + 1;
         Buffer newBuff = checkPool(block);
         if (newBuff == null) {
-            byte[] temp = new byte[blockSize];
             try {
                 data.seek((block - 1) * blockSize);
-                data.read(temp);
+                data.read(readBytes);
                 diskReads++;
             }
             catch (IOException e) {
                 System.out.println("IOException: Failed to acquire Buffer");
                 e.printStackTrace();
             }
-            newBuff = new Buffer(temp, block);
+            newBuff = new Buffer(readBytes.clone(), block);
             addToPool(newBuff);
         }
         else {
