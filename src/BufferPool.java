@@ -45,6 +45,7 @@ public class BufferPool {
 
     }
 
+
     /**
      * Sets the bytes at a given index in a buffer in the pool.
      */
@@ -53,10 +54,12 @@ public class BufferPool {
         int block = (index / numRecs) + 1;
         Buffer tempBuff = checkPool(block);
         for (int i = 0; i < bytes.length; i++) {
-            tempBuff.getDataPointer()[index - ((block - 1) * numRecs) + i] = bytes[i];
+            tempBuff.getDataPointer()[index - ((block - 1) * numRecs) + i] =
+                bytes[i];
         }
         tempBuff.markDirty();
     }
+
 
     /**
      * Acquires the Buffer for block 'block' and adds it to the pool.
@@ -87,10 +90,10 @@ public class BufferPool {
         else {
             setRecent(newBuff);
         }
-        byte[] record = new byte[]{ newBuff.getDataPointer()[index - ((block - 1) * numRecs)],
-            newBuff.getDataPointer()[index - ((block - 1) * numRecs) + 1], newBuff
-                .getDataPointer()[index - ((block - 1) * numRecs) + 2], newBuff
-                    .getDataPointer()[index - ((block - 1) * numRecs) + 3] };
+        int temp = (index - ((block - 1) * numRecs)) * recordSize;
+        byte[] record = new byte[] { newBuff.getDataPointer()[temp], newBuff
+            .getDataPointer()[temp + 1], newBuff.getDataPointer()[temp + 2],
+            newBuff.getDataPointer()[temp + 3] };
         return record;
     }
 
@@ -201,6 +204,7 @@ public class BufferPool {
             pool[i] = null; // clears element from array
         }
     }
+
 
     /**
      * Closes the data file of BufferPool

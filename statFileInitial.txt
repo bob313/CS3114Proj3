@@ -1,1 +1,0 @@
-Name: initial.txt     Hits: 3516789     Reads: 1739     Writes: 1143     Exec Time: 7887
