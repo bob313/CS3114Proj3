@@ -15,11 +15,13 @@ public class BufferPoolTest extends TestCase{
         
         bufPool = new BufferPool("BinaryTest.txt", 2);
         
-        bufPool.acquireBuffer(2);
+        byte[] temp = bufPool.acquireBuffer(2);
         assertEquals(1, bufPool.getPool()[0].getBlockNum());
+        assertTrue(temp[2] != "0".getBytes()[0]); 
         
-        bufPool.acquireBuffer(1200);
+        byte[] temp2 = bufPool.acquireBuffer(1200);
         assertEquals(2, bufPool.getPool()[1].getBlockNum());
+        assertTrue(temp2[2] != "0".getBytes()[0]);
         
         assertEquals(2, bufPool.getReads());
         
@@ -28,8 +30,9 @@ public class BufferPoolTest extends TestCase{
         
         assertEquals(1, bufPool.getCacheHits());
         
-        bufPool.acquireBuffer(2500);
+        byte[] temp3 = bufPool.acquireBuffer(2500);
         assertEquals(3, bufPool.getPool()[1].getBlockNum());
+        assertTrue(temp3[3] != "0".getBytes()[0]);
         
         assertEquals(3, bufPool.getReads());
         assertEquals(0, bufPool.getWrites());
@@ -41,6 +44,10 @@ public class BufferPoolTest extends TestCase{
         assertEquals(1, bufPool.getWrites());
         assertEquals(2, bufPool.getPool()[1].getBlockNum());
         assertEquals(3, bufPool.getPool()[0].getBlockNum());
+        
+        
+        bufPool.setBytes(test, 1024);
+        assertEquals(test[2], bufPool.getPool()[1].getDataPointer()[2]);
         
         //CLEAR TEST: Testing of the clearPool method begins here
         bufPool.clearPool();
